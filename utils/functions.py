@@ -37,8 +37,8 @@ def clean_py_path(path):
                 if element.endswith('.pyc') or element.startswith('.goutput'):
                     os.remove(element)
 
-def control_path_necessaries(base_path: str, necessaries: dict):
-    def is_necessary(path: str):
+def control_path_necessaries(base_path, necessaries):
+    def is_necessary(path):
         path_split = path.strip(sep()).split(sep())
         path_str = f'{sep()}'
         error = ''
@@ -58,6 +58,6 @@ def control_path_necessaries(base_path: str, necessaries: dict):
             raise ModuleNotFoundError(error)
     return True
 
-def add_syspath(path: str):
+def add_syspath(path):
     if not path in syspath:
         syspath.append(path)

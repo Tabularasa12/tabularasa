@@ -25,7 +25,7 @@ NECESSARIES = dict(
 
 MASTER_PARAMETERS = Parameters(defaults=NECESSARIES['config'])
 
-def add_folder_route(app: Flask | Blueprint, name: str, path: str, download: bool | None=False):
+def add_folder_route(app, name, path, download=False):
     rule = f'/{name}/<path:filename>'
     view_func = lambda filename: send_from_directory(path, filename, as_attachment=download)
     app.add_url_rule(rule, name, view_func=view_func)
@@ -94,7 +94,7 @@ class Master(Flask):
         return apps
 
 class App(Blueprint):
-    def __init__(self, name: str, import_name:str, page_parameters, master: Flask):
+    def __init__(self, name, import_name, page_parameters, master):
         Blueprint.__init__(self, name, import_name, url_prefix=join(sep(), name))
         self.master = master
         self.page_parameters = page_parameters

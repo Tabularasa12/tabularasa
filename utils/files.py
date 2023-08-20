@@ -153,7 +153,7 @@ def listdir(path, type=None, start=None, end=None, contain=None, style='name', r
                 ret.append(element)
     return ret
 
-def isempty(path: str):
+def isempty(path):
     elements = '{} is not a valid path'.format(path)
     if exist(path):
         if isdir(path):

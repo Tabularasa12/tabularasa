@@ -23,7 +23,7 @@ DEFAULT_PARAMETERS = dict(
 AUTORIZED_HEIGHTS = ['small', 'medium', 'large', 'halfheight', 'fullheight']
 
 class Page(Tagger):
-    def __init__(self, parameters:dict|Parameters|None=None):
+    def __init__(self, parameters=None):
         self.p = Parameters(**parameters, defaults=DEFAULT_PARAMETERS)
         children = [
             HEAD(
