@@ -48,7 +48,7 @@ class Bulma:
         if not exist(css_file):
             write(css_file, sass.compile(filename=self.path))
 
-    def update(self, num:int|None=None):
+    def update(self, num=None):
         self.del_csss
         self.num += 1
         if num:

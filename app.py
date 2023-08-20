@@ -33,6 +33,19 @@ def init_page():
     navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
     page.navbar.end.update(navbar_end)
 
+# @app.route('/update', methods=['POST'])
+# def webhook():
+#     if request.method == 'POST':
+#         repo = git.Repo('./tabularasa')
+#         origin = repo.remotes.origin
+#         repo.create_head('master', 
+#     origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+#         origin.pull()
+#         return '', 200
+#     else:
+#         return '', 400
+
+
 @default.route('/')
 @default.route('/index')
 @default.to_page()
