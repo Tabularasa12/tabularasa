@@ -1,0 +1,4 @@
+
+DEFAUT_TEMPLATE = 'index.html'
+DEFAUT_CONFIG_FILE_NAME = 'config.py'
+DEFAULT_FILE_DOWNLOAD = False
