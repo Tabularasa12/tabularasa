@@ -1,6 +1,6 @@
 import re
 class URL:
-    def __init__(self, *args, _vars:dict|None=dict(), pointer:str|None=''):
+    def __init__(self, *args, _varsdict(), pointer:=''):
         self.args = [*args]
         self.vars=_vars
         self.pointer=str(pointer)

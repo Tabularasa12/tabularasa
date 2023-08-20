@@ -5,13 +5,13 @@ import copy
 from easydict import EasyDict as edict
 
 class Parameters(edict):
-    def __init__(self, defaults: dict | None=None, **values):
+    def __init__(self, defaults=None, **values):
         ret = self.__obj_to_dict__(copy.copy(defaults)) if defaults else {}
         for k, v in values.items():
             ret[k] = v
         edict.__init__(self, **ret)
     
-    def __obj_to_dict__(self, _object: str | list | tuple | dict):
+    def __obj_to_dict__(self, _object=''):
         ret = None
         if isinstance(_object, str):
             if isfile(_object):
