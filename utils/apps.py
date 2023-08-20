@@ -9,7 +9,7 @@ from .files import *
 from .html import *
 from .regex import REGEX
 from .parameters import Parameters, edict
-from settings import DEFAUT_TEMPLATE, DEFAULT_FILE_DOWNLOAD, DEFAUT_CONFIG_FILE_NAME
+from settings import DEFAUT_TEMPLATE, DEFAULT_FILE_DOWNLOAD, DEFAULT_CONFIG_FILE_NAME
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -20,10 +20,8 @@ NECESSARIES = dict(
     favicon = join('static', 'favicon.ico'),
     template = join('utils', 'html', DEFAUT_TEMPLATE),
     icons = join('utils', 'icons'),
-    config = DEFAUT_CONFIG_FILE_NAME
+    config = DEFAULT_CONFIG_FILE_NAME
 )
-
-MASTER_PARAMETERS = Parameters(defaults=NECESSARIES['config'])
 
 def add_folder_route(app, name, path, download=False):
     rule = f'/{name}/<path:filename>'
@@ -32,7 +30,7 @@ def add_folder_route(app, name, path, download=False):
 
 
 class Master(Flask):
-    def __init__(self, import_name, page_parameters, **attributes):
+    def __init__(self, import_name, **attributes):
         Flask.__init__(self, import_name, **attributes)
         add_folder_route(self, 'apps', join(self.root_path, NECESSARIES['apps']))
         self.template_folder = dirname(NECESSARIES['template'])
@@ -41,10 +39,10 @@ class Master(Flask):
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
-        
-        self.page_parameters = page_parameters
+
+        self.page_parameters = Parameters(defaults=NECESSARIES['config'])
         self.page_parameters['name'] = labelize(self.import_name)
-        self.page_parameters['title'] = page_parameters['name']
+        self.page_parameters['title'] = labelize(self.import_name)
         self.page = Page(self.page_parameters)
     
     def _page(self):
@@ -89,13 +87,16 @@ class Master(Flask):
         return apps
 
 class App(Blueprint):
-    def __init__(self, name, import_name, page_parameters, master):
+    def __init__(self, name, import_name, master):
         Blueprint.__init__(self, name, import_name, url_prefix=join(sep(), name))
         self.master = master
-        self.page_parameters = page_parameters
+        base_path = self.root_path.split(self.master.root_path)[1]
+        parameters_file = join(base_path.strip(sep()), DEFAULT_CONFIG_FILE_NAME)
+        self.page_parameters = Parameters(defaults=parameters_file)
         self.page_parameters['name'] = labelize(self.name)
         self.page_parameters['title'] = f'{labelize(master.name)} -> {self.name}'
         self.page = Page(self.page_parameters)
+
 
     controllers = Master.controllers
     to_page = Master.to_page

@@ -2,7 +2,7 @@
 from importlib import import_module
 from flask import request, url_for
 
-from utils.apps import NECESSARIES, Master, App, MASTER_PARAMETERS
+from utils.apps import NECESSARIES, Master, App
 from utils.bulma import bulma
 from utils.icons import icons
 from utils.files import *
@@ -20,11 +20,12 @@ from utils.parameters import Parameters
 #     '/backend': backend
 # })
 
-default = Master(basename(dirname(__file__)), MASTER_PARAMETERS)
+default = Master(basename(dirname(__file__)))
 
 @default.before_request
 def init_page():
     page = default._page()
+    page.color = 'transparent'
     page._style += "background-image: linear-gradient(to right top, yellow, purple);"
     page.body._class += 'is-justify-content-center'
     page.burger.text_color = 'white'
@@ -44,10 +45,7 @@ def index():
     )
     return locals()
 
-
-ADMIN_PARAMETERS = Parameters(defaults=NECESSARIES['config'])
-
-admin = App('admin', __name__, ADMIN_PARAMETERS, default)
+admin = App('admin', __name__, default)
 for c in listdir('controllers', type='file', regex=REGEX['controllers']):
     import_module(f'controllers.{c}'.strip('.py')).admin
 

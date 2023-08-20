@@ -23,7 +23,7 @@ DEFAULT_PARAMETERS = dict(
 AUTORIZED_HEIGHTS = ['small', 'medium', 'large', 'halfheight', 'fullheight']
 
 class Page(Tagger):
-    def __init__(self, parameters=None):
+    def __init__(self, parameters=dict()):
         self.p = Parameters(**parameters, defaults=DEFAULT_PARAMETERS)
         children = [
             HEAD(
@@ -49,6 +49,7 @@ class Page(Tagger):
         ]
         Tagger.__init__(self, 'HTML', *children)
         self._class -= __class__.__name__.lower()
+        self.color = self.p.color
         self.height = self.p.height
         if self.height:
             self.content._class += f'is-{self.height}'
