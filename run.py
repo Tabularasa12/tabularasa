@@ -7,7 +7,6 @@ from flask.cli import main
 
 args = sys.argv
 path = os.path.dirname(__file__)
-print(os.getcwd())
 
 if os.path.basename(args[0]) == os.path.basename(__file__):
     os.chdir(path)
