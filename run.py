@@ -6,10 +6,12 @@ from utils.functions import clean_py_path
 from flask.cli import main
 
 args = sys.argv
+file = sys.argv[0]
 path = os.path.dirname(__file__)
 
 if os.path.basename(args[0]) == os.path.basename(__file__):
     os.chdir(path)
+    path = os.path.join(path, file)
     if len(args) == 1:
         sys.argv = [path, "run"]
     elif len(args) > 1:
@@ -20,10 +22,8 @@ if os.path.basename(args[0]) == os.path.basename(__file__):
                 else:
                     path = os.path.join(path, 'apps', args[2])
             clean_py_path(path)
-        if  args[1] == 'debug':
+        if args[1] == 'debug':
             sys.argv = [path, "run", '--debug']
     if 'run' in sys.argv:
         main()
-
-
 

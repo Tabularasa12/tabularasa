@@ -41,12 +41,7 @@ class Master(Flask):
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
-
-        self.config.from_mapping(
-            SERVER_NAME='127.0.0.1:5000',
-            PREFERRED_URL_SCHEME='http',
-            APPLICATION_ROOT='/'
-        )
+        
         self.page_parameters = page_parameters
         self.page_parameters['name'] = labelize(self.import_name)
         self.page_parameters['title'] = page_parameters['name']
