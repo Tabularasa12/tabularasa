@@ -2,7 +2,6 @@ import re
 import os
 import shutil
 import distutils.dir_util as dirutil
-from tkinter import Tk, filedialog
 
 __all__ = [
     'sep',
@@ -27,7 +26,6 @@ __all__ = [
 	'listdir',
 	'getmtime',
 	'split',
-	'select_path',
 ]
 
 def sep():
@@ -170,13 +168,6 @@ def getmtime(path):
 def split(path):
     return os.path.split(path)
 
-def select_path(type='file', title = None):
-	root = Tk()
-	root.withdraw()
-	try: path = filedialog.askopenfilename(parent=root, title=title) if type == 'file' else filedialog.askdirectory(parent=root, title=title)
-	except: path = ''
-	finally: root.destroy()
-	return path if path else None
 
 
 

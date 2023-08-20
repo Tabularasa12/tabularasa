@@ -7,8 +7,10 @@ from flask.cli import main
 
 args = sys.argv
 path = os.path.dirname(__file__)
-print(len(args), args[1])
-if args[0] == os.path.basename(__file__):
+print(os.getcwd())
+
+if os.path.basename(args[0]) == os.path.basename(__file__):
+    os.chdir(path)
     if len(args) == 1:
         sys.argv = [path, "run"]
     elif len(args) > 1:

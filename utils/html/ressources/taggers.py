@@ -148,12 +148,12 @@ class Tagger(TAGGER):
     def __init__(self,
             name,
             *children,
-            color:str|None='',
-            back_color:str|None='',
-            text_color:str|None='',
-            size:int|None=0,
-            _class:str|None='',
-            _style:str|None='',
+            color='',
+            back_color='',
+            text_color='',
+            size=0,
+            _class='',
+            _style='',
             **attributes
         ):
         children = [*children] if children else []
