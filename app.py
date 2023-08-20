@@ -34,6 +34,20 @@ def init_page():
     navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
     page.navbar.end.update(navbar_end)
 
+@default.route('/update', methods=['POST'])
+@default.to_page()
+def update():
+    if request.method == 'POST':
+        repo = git.Repo('./tabularasa')
+        origin = repo.remotes.origin
+        repo.create_head('master', 
+    origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+        origin.pull()
+        body = 'Erreur 200'
+    else:
+        body = 'Erreur 400'
+    return locals()
+
 @default.route('/')
 @default.route('/index')
 @default.to_page()
@@ -52,7 +66,6 @@ for c in listdir('controllers', type='file', regex=REGEX['controllers']):
 @admin.before_request
 def init_page():
     page = admin._page()
-    page.color = 'primary'
     page.body._class += 'is-justify-content-center'
 
 default.import_apps(NECESSARIES['apps'])

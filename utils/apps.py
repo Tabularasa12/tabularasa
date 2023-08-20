@@ -91,6 +91,7 @@ class App(Blueprint):
         Blueprint.__init__(self, name, import_name, url_prefix=join(sep(), name))
         self.master = master
         base_path = self.root_path.split(self.master.root_path)[1]
+        self.static_folder = join(self.root_path, 'static')
         parameters_file = join(base_path.strip(sep()), DEFAULT_CONFIG_FILE_NAME)
         self.page_parameters = Parameters(defaults=parameters_file)
         self.page_parameters['name'] = labelize(self.name)
@@ -100,5 +101,13 @@ class App(Blueprint):
 
     controllers = Master.controllers
     to_page = Master.to_page
-    _page = Master._page
+    
+    def _page(self):
+        page = self.page
+        page.bulma['_href'] = url_for('css', filename=bulma.css)
+        page.icons['_href'] = url_for('icons', filename=icons.css)
+        page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p.favicon)
+        page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p.logo)
+        page.navbar.activate
+        return page
 

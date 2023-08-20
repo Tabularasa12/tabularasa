@@ -8,7 +8,7 @@ from utils.functions import labelize
 @admin.to_page()
 def index():
     body = A(
-        IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
+        IMG(_src=url_for(f'{admin.name}.static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
         _href=url_for('index'),
         _title = labelize("recharger la page"),
     )
