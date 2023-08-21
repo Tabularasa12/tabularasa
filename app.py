@@ -46,7 +46,8 @@ def update(mode):
         host = 'www.pythonanywhere.com'
         username = 'Tabularasa'
         domain_name = 'tabularasa'
-        request_host = host.replace('www', domain_name)
+        # request_host = host.replace('www', domain_name)
+        request_host = 'tabularasa.pythonanywhere.com'
         token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
         log = {f"Début de mise à jour de {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
         if request.host == request_host:
