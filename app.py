@@ -60,10 +60,10 @@ def update(mode):
             json[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             response = subprocess.call(["git", "pull"])
         
-        #     if response.returncode == 200:
-        #         json[now()] = f"{response.stdout}"
-        #     else:
-        #         json[now()] = f"{response.stderr}"
+            if response.returncode == 200:
+                json[now()] = f"{response.stdout}"
+            else:
+                json[now()] = f"{response.stderr}"
 
     #         import requests
     #         response = requests.post(
