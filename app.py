@@ -70,7 +70,7 @@ def update(mode):
             else:
                 log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
     else:
-        log = {f"Mise à jour non activée" : request.host}
+        log = {f"Mise à jour non activée" : time(DEFAULT_LOG_TIME_FORMAT)}
     export_log = Json(f'./{DEFAULT_LOG_FILE}', host = request.host, update = log)
     return dict()
 
