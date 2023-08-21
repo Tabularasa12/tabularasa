@@ -1,7 +1,7 @@
 import subprocess
+from time import strftime as time
 from importlib import import_module
 from flask import request, url_for
-#o
 from utils.apps import NECESSARIES, Master, App
 from utils.bulma import bulma
 from utils.icons import icons
@@ -10,6 +10,7 @@ from utils.functions import labelize
 from utils.html import *
 from utils.regex import REGEX
 from utils.parameters import Parameters
+from utils.json import Json
 
 # A essayer pour avoir plusieurs application valides l'une à côté de l'autre
 # from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -38,7 +39,31 @@ def init_page():
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     if mode:
-        subprocess.call(["git", "pull"])
+        log = Json('log.json')
+        host = 'www.pythonanywhere.com'
+        username = 'Tabularasa'
+        domain_name = 'tabularasa'
+        token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
+        if request.host == host:
+            log[time("%A %d %B %Y %H:%M:%S")] = dict(f"Récupération des modifications sur le dépot Github de '{domain_name}'")
+            
+            response = subprocess.call(["git", "pull"])
+            
+            if response.returncode == 200:
+                log[time("%A %d %B %Y %H:%M:%S")] = dict(f"{response.stdout}")
+            else:
+                log[time("%A %d %B %Y %H:%M:%S")] = dict(f"{response.stderr}")
+        
+            import requests
+            response = requests.post(
+                f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
+                headers={'Authorization': f'Token {token}'}
+            )
+            
+            if response.status_code == 200:
+                log[time("%A %d %B %Y %H:%M:%S")] = dict(f"L'application '{domain_name}' à bien été relancée")
+            else:
+                log[time("%A %d %B %Y %H:%M:%S")] = dict(f"Un problème est survenu lors du rechargement de l'application '{domain_name}'")
     return dict()
 
 @default.route('/')
