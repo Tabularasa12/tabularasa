@@ -1,7 +1,7 @@
 #essai1
 
 import subprocess
-from time import localtime as time
+from time import strftime as time
 from importlib import import_module
 from flask import request, url_for
 from utils.apps import NECESSARIES, Master, App
@@ -96,8 +96,8 @@ def update(mode):
 @default.to_page()
 def index():
     json = Json(f'./{DEFAULT_LOG_FILE}', sort_key=False)
-    json['essai'] = 'essai'
-    print(json.datas)
+    json[time(DEFAULT_LOG_TIME_FORMAT)] = 'essai'
+    print(json)
     
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
