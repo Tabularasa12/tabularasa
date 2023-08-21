@@ -49,18 +49,25 @@ def update(mode):
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
 
     if not isfile(json_path):
-        log = {f"Début du log pour {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
+        log = {time(DEFAULT_LOG_TIME_FORMAT) : f"Début du log pour {domain_name}"}
         json = Json(json_path, sort_key=False, **log)
     else:
         json = Json(json_path, sort_key=False)
         log = json.datas
-        log[f"Tentative de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
+        log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
     if mode:
-        log[f"Début de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
-        log["host"] = dict(request=request.host, calculer=request_host)
-        log["request host"] = request.host
+        log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
+        if request.host == request_host:
+            log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+            
+            response = subprocess.call(["git", "pull"])
+            
+            if response.returncode == 200:
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
+            else:
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
     else:
-        log["Mise à jour non activée"] = time(DEFAULT_LOG_TIME_FORMAT)
+        log[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
     json.update(log)
     #     if request.host == request_host:
     #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
