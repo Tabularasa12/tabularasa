@@ -36,8 +36,8 @@ def init_page():
 
 @default.route('/update/<string:mode>', methods=["POST"])
 def update(mode):
-    mode = True if mode == 'true' or mode == 'True' else False
-    if mode:
+    # mode = True if mode == 'true' or mode == 'True' else False
+    if mode == 'true':
         subprocess.call(["git", "pull"])
     return dict()
 
