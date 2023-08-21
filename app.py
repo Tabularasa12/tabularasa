@@ -43,7 +43,6 @@ def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     if mode:
         log = dict()
-        log['host'] = request.host
         host = 'www.pythonanywhere.com'
         username = 'Tabularasa'
         domain_name = 'tabularasa'
@@ -68,7 +67,7 @@ def update(mode):
                 log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
             else:
                 log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
-        log = Json(f'./{DEFAULT_LOG_FILE}', update = log)
+        log = Json(f'./{DEFAULT_LOG_FILE}', host = request.host, update = log)
     return dict()
 
 @default.route('/')
