@@ -46,7 +46,7 @@ def update(mode):
     domain_name = 'tabularasa'
     request_host = host.replace('www', domain_name)
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
-
+    message =''
     if not isfile(json_path):
         message = f"Début du log pour {domain_name}"
     json = Json(json_path, sort_key=False)
@@ -94,19 +94,6 @@ def update(mode):
 @default.route('/index')
 @default.to_page()
 def index():
-    json_path = f'./{DEFAULT_LOG_FILE}'
-    mode = True
-    domain_name = 'tabularasa'
-    message =''
-    if not isfile(json_path):
-        message = f"Début du log pour {domain_name}"
-    json = Json(json_path, sort_key=False)
-    if message:
-        json[now()] = message
-    json[now()] = f"Tentative de mise à jour de {domain_name}"
-    if mode:
-        json[now()] = f"Début de mise à jour de {domain_name}"
-    
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
         _href=url_for('index'),
