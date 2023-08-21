@@ -2,4 +2,4 @@
 DEFAUT_TEMPLATE = 'index.html'
 DEFAULT_CONFIG_FILE_NAME = 'config.py'
 DEFAULT_FILE_DOWNLOAD = False
-DEV_MODE = False
+UPDATE_MODE = False
