@@ -13,6 +13,7 @@ from utils.html import *
 from utils.regex import REGEX
 from utils.parameters import Parameters
 from utils.json import Json
+from settings import *
 
 # A essayer pour avoir plusieurs application valides l'une à côté de l'autre
 # from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -47,14 +48,14 @@ def update(mode):
         domain_name = 'tabularasa'
         token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
         if request.host == host:
-            log[time("%d-%m-%Y_%H:%M:%S")] = dict(f"Récupération des modifications sur le dépot Github de '{domain_name}'")
+            log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
             response = subprocess.call(["git", "pull"])
             
             if response.returncode == 200:
-                log[time("%d-%m-%Y_%H:%M:%S")] = dict(f"{response.stdout}")
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
             else:
-                log[time("%d-%m-%Y_%H:%M:%S")] = dict(f"{response.stderr}")
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
         
             import requests
             response = requests.post(
@@ -63,17 +64,16 @@ def update(mode):
             )
             
             if response.status_code == 200:
-                log[time("%d-%m-%Y_%H:%M:%S")] = dict(f"L'application '{domain_name}' à bien été relancée")
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
             else:
-                log[time("%d-%m-%Y_%H:%M:%S")] = dict(f"Un problème est survenu lors du rechargement de l'application '{domain_name}'")
-        log = Json('./log.json', update = log)
+                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
+        log = Json(f'./{DEFAULT_LOG_FILE}', update = log)
     return dict()
 
 @default.route('/')
 @default.route('/index')
 @default.to_page()
 def index():
-    print(time("%d-%m-%Y_%H:%M:%S"))
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
         _href=url_for('index'),
