@@ -49,7 +49,7 @@ class Master(Flask):
     
     def update(mode):
         mode = True if mode == 'true' or mode == 'True' else False
-        if request.method == 'POST' and mode:
+        if request.method == 'POST':
             subprocess.call(["git", "stash", "save"])
             subprocess.call(["git", "pull"])
         return dict()
