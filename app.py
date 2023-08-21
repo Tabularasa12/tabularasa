@@ -47,13 +47,6 @@ def init_page():
 #         else:
 #             return '', 400
 
-@default.route('/update', methods=["POST"])
-def update():
-    if request.method == 'POST':
-        subprocess.call(["git", "stash", "save"])
-        subprocess.call(["git", "pull"])
-    return dict()
-
 @default.route('/')
 @default.route('/index')
 @default.to_page()

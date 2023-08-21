@@ -9,7 +9,7 @@ from .files import *
 from .html import *
 from .regex import REGEX
 from .parameters import Parameters, edict
-from settings import DEFAUT_TEMPLATE, DEFAULT_FILE_DOWNLOAD, DEFAULT_CONFIG_FILE_NAME
+from settings import *
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -39,12 +39,24 @@ class Master(Flask):
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
+        
+        if not DEV_MODE:
+            self.add_url_rule('/update', 'update', view_func=self.update, methods=["POST"])
 
         self.page_parameters = Parameters(defaults=NECESSARIES['config'])
         self.page_parameters['name'] = labelize(self.import_name)
         self.page_parameters['title'] = labelize(self.import_name)
         self.page = Page(self.page_parameters)
     
+    def update():
+        if request.method == 'POST':
+            print(request.args)
+            print(request.data)
+            print(request.files)
+            subprocess.call(["git", "stash", "save"])
+            subprocess.call(["git", "pull"])
+        return dict()
+
     def _page(self):
         page = self.page
         page.bulma['_href'] = url_for('css', filename=bulma.css)
