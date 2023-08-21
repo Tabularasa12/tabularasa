@@ -57,15 +57,15 @@ def update(mode):
         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
     if mode:
         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
-        if request.host == request_host:
-            log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+        # if request.host == request_host:
+        #     log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
-            response = subprocess.call(["git", "pull"])
+        #     response = subprocess.call(["git", "pull"])
             
-            if response.returncode == 200:
-                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
-            else:
-                log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
+        #     if response.returncode == 200:
+        #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
+        #     else:
+        #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
     else:
         log[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
     json.update(log)
