@@ -52,11 +52,12 @@ def update(mode):
     json = Json(json_path, sort_key=False)
     if message:
         json[now()] = message
+    json[now()] = "--------------------------------------------"
     json[now()] = f"Tentative de mise à jour de {domain_name}"
     if mode:
         json[now()] = f"Début de mise à jour de {domain_name}"
         if request.host == request_host:
-            json[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+            json[now()] = f"Récupération des modifications sur le dépot Github de {domain_name}"
             response = subprocess.call(["git", "pull"])
             json[now()] = f"{returncode}"
 
