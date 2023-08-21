@@ -46,7 +46,7 @@ def init_page():
 #     return locals()
 
 
-@default.route('/update')
+@default.route('/update', methods=["GET", "POST"])
 @default.to_page()
 def update():
     if request.method == 'POST':
