@@ -35,17 +35,16 @@ def init_page():
     page.navbar.end.update(navbar_end)
 
 # Pour automatiser la mise jour sur pythonanywhere
-# @app.route('/webhook', methods=['POST'])
-#     def webhook():
-#         if request.method == 'POST':
-#             repo = git.Repo('./myproject')
-#             origin = repo.remotes.origin
-#             repo.create_head('master', 
-#         origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
-#             origin.pull()
-#             return '', 200
-#         else:
-#             return '', 400
+# @default.route('/update')
+# @default.to_page()
+# def update():
+#     if request.method == 'POST':
+#         subprocess.run(["git", "pull", "https://github.com/Tabularasa12/tabularasa.git"])
+#         body = DIV("Mise à jour de l'application effectuée")
+#     else:
+#         body = DIV("Mise à jour de l'application ")
+#     return locals()
+
 
 @default.route('/update')
 @default.to_page()
@@ -54,8 +53,10 @@ def update():
         subprocess.run(["git", "pull", "https://github.com/Tabularasa12/tabularasa.git"])
         body = DIV("Mise à jour de l'application effectuée")
     else:
+        subprocess.run(["git", "pull", "https://github.com/Tabularasa12/tabularasa.git"])
         body = DIV("Mise à jour de l'application ")
-    return locals()
+    return dict(body = body)
+
 
 @default.route('/')
 @default.route('/index')
