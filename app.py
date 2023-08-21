@@ -1,7 +1,7 @@
 #essai2
 
 import subprocess
-from time import strftime as time
+from time import localtime as time
 from importlib import import_module
 from flask import request, url_for
 from utils.apps import NECESSARIES, Master, App
