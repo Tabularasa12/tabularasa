@@ -7,7 +7,7 @@ from functools import wraps
 from datetime import datetime
 from flask import Blueprint, Flask, render_template, Markup, send_from_directory
 
-from settings import DEFAUT_TEMPLATE
+from settings import DEFAUT_TEMPLATE, DEFAULT_LOG_TIME_FORMAT
 from utils.files import *
 from utils.regex import REGEX
 from utils.html.ressources.taggers import Tagger
@@ -61,3 +61,6 @@ def control_path_necessaries(base_path, necessaries):
 def add_syspath(path):
     if not path in syspath:
         syspath.append(path)
+
+def now():
+    return datetime.now().strftime(DEFAULT_LOG_TIME_FORMAT)

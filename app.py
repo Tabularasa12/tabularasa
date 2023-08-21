@@ -1,14 +1,13 @@
 #essai2
 
 import subprocess
-from datetime import datetime
 from importlib import import_module
 from flask import request, url_for
 from utils.apps import NECESSARIES, Master, App
 from utils.bulma import bulma
 from utils.icons import icons
 from utils.files import *
-from utils.functions import labelize
+from utils.functions import labelize, now
 from utils.html import *
 from utils.regex import REGEX
 from utils.parameters import Parameters
@@ -50,31 +49,31 @@ def update(mode):
 
     json = Json(json_path, sort_key=False)
     if not isfile(json_path):
-        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début du log pour {domain_name}"
-    json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
+        json[now()] = f"Début du log pour {domain_name}"
+    json[now()] = f"Tentative de mise à jour de {domain_name}"
     if mode:
-        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
+        json[now()] = f"Début de mise à jour de {domain_name}"
         # if request.host == request_host:
-        #     log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+        #     log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
         #     response = subprocess.call(["git", "pull"])
             
         #     if response.returncode == 200:
-        #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
+        #         log[now()] = f"{response.stdout}"
         #     else:
-        #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
+        #         log[now()] = f"{response.stderr}"
     else:
-        json[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
+        json[now()] = "Mise à jour désactivée"
     # json.update(log)
     #     if request.host == request_host:
-    #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+    #         log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
     #         response = subprocess.call(["git", "pull"])
             
     #         if response.returncode == 200:
-    #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stdout}"
+    #             log[now()] = f"{response.stdout}"
     #         else:
-    #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
+    #             log[now()] = f"{response.stderr}"
         
     #         import requests
     #         response = requests.post(
@@ -83,9 +82,9 @@ def update(mode):
     #         )
             
     #         if response.status_code == 200:
-    #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
+    #             log[now()] = f"L'application '{domain_name}' à bien été relancée"
     #         else:
-    #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
+    #             log[now()] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
     
     return dict()
 
@@ -94,7 +93,7 @@ def update(mode):
 @default.to_page()
 def index():
     json = Json(f'./{DEFAULT_LOG_FILE}', sort_key=False)
-    json[time(DEFAULT_LOG_TIME_FORMAT)] = 'essai'
+    json[now()] = 'essai'
     print(json)
     
     body = A(
