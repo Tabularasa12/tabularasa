@@ -61,7 +61,7 @@ def update(mode):
             response = subprocess.call(["git", "pull"])
             if not response:
                 json[now()] = f"Récupération des modifications effectuée"
-            if not response:
+            else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
             import requests
@@ -69,7 +69,7 @@ def update(mode):
                 f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': f'Token {token}'}
             )
-
+            log[now()] = response
             if response.status_code == 200:
                 log[now()] = f"L'application {domain_name} à bien été relancée"
             else:
