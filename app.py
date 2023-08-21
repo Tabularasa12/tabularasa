@@ -55,15 +55,10 @@ def update(mode):
     json[now()] = f"Tentative de mise à jour de {domain_name}"
     if mode:
         json[now()] = f"Début de mise à jour de {domain_name}"
-        json[now()] = dict(calculer = request_host, request = request.host)
         if request.host == request_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             response = subprocess.call(["git", "pull"])
-        
-            if response.returncode == 200:
-                json[now()] = f"{response.stdout}"
-            else:
-                json[now()] = f"{response.stderr}"
+            json[now()] = f"{returncode}"
 
     #         import requests
     #         response = requests.post(
