@@ -47,16 +47,12 @@ def init_page():
 #         else:
 #             return '', 400
 
-@default.route('/update', methods=["GET", "POST"])
-@default.to_page()
+@default.route('/update', methods=["POST"])
 def update():
     if request.method == 'POST':
         subprocess.call(["git", "stash", "save"])
         subprocess.call(["git", "pull"])
-        body = 'processus terminé'
-    else:
-        body = request.method
-    return local()
+    return dict()
 
 @default.route('/')
 @default.route('/index')
