@@ -91,11 +91,7 @@ def update(mode):
 @default.route('/')
 @default.route('/index')
 @default.to_page()
-def index():
-    json = Json(f'./{DEFAULT_LOG_FILE}', sort_key=False)
-    json[now()] = 'essai'
-    print(json)
-    
+def index():    
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
         _href=url_for('index'),
