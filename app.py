@@ -66,7 +66,7 @@ def update(mode):
                 log[time("%A %d %B %Y %H:%M:%S")] = dict(f"L'application '{domain_name}' à bien été relancée")
             else:
                 log[time("%A %d %B %Y %H:%M:%S")] = dict(f"Un problème est survenu lors du rechargement de l'application '{domain_name}'")
-        log = Json('./log.json', **log)
+        log = Json('./log.json', log)
     return dict()
 
 @default.route('/')
