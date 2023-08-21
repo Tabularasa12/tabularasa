@@ -53,10 +53,9 @@ def update(mode):
         json = Json(json_path, sort_key=False, **log)
     else:
         json = Json(json_path, sort_key=False)
-        log = json.datas
-        log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
+        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
     if mode:
-        log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
+        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
         # if request.host == request_host:
         #     log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
@@ -67,8 +66,8 @@ def update(mode):
         #     else:
         #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
     else:
-        log[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
-    json.update(log)
+        json[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
+    # json.update(log)
     #     if request.host == request_host:
     #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
