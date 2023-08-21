@@ -56,7 +56,7 @@ def update(mode):
     if mode:
         json[now()] = f"Début de mise à jour de {domain_name}"
         json[now()] = dict(calculer = request_host, request = request.host)
-        if request.host == request_host:
+        if str(request.host) == str(request_host):
             log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
             response = subprocess.call(["git", "pull"])
