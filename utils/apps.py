@@ -49,8 +49,7 @@ class Master(Flask):
     
     def update():
         if request.method == 'POST':
-            # subprocess.call(["git", "stash", UPDATE_MODE])
-            subprocess.call(["git", "pull"])
+            subprocess.call(["git", UPDATE_MODE])
         return dict()
 
     def _page(self):
