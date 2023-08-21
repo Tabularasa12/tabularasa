@@ -56,28 +56,15 @@ def update(mode):
     if mode:
         json[now()] = f"Début de mise à jour de {domain_name}"
         json[now()] = dict(calculer = request_host, request = request.host)
-        if str(request.host) == str(request_host):
-            log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
-            
+        if request.host == request_host:
+            json[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             response = subprocess.call(["git", "pull"])
-            
-        #     if response.returncode == 200:
-        #         log[now()] = f"{response.stdout}"
-        #     else:
-        #         log[now()] = f"{response.stderr}"
-    else:
-        json[now()] = "Mise à jour désactivée"
-    # json.update(log)
-    #     if request.host == request_host:
-    #         log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
-            
-    #         response = subprocess.call(["git", "pull"])
-            
-    #         if response.returncode == 200:
-    #             log[now()] = f"{response.stdout}"
-    #         else:
-    #             log[now()] = f"{response.stderr}"
         
+        #     if response.returncode == 200:
+        #         json[now()] = f"{response.stdout}"
+        #     else:
+        #         json[now()] = f"{response.stderr}"
+
     #         import requests
     #         response = requests.post(
     #             f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
@@ -88,6 +75,9 @@ def update(mode):
     #             log[now()] = f"L'application '{domain_name}' à bien été relancée"
     #         else:
     #             log[now()] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
+    else:
+        json[now()] = "Mise à jour désactivée"
+        
     
     return dict()
 
