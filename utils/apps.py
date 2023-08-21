@@ -40,7 +40,7 @@ class Master(Flask):
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
         
-        self.add_url_rule('/update/<str:mode>', 'update', view_func=self.update, methods=["POST"])
+        self.add_url_rule('/update/<string:mode>', 'update', view_func=self.update, methods=["POST"])
 
         self.page_parameters = Parameters(defaults=NECESSARIES['config'])
         self.page_parameters['name'] = labelize(self.import_name)
