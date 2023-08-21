@@ -34,7 +34,7 @@ def init_page():
     navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
     page.navbar.end.update(navbar_end)
 
-@default.route('/update/<string:mode', methods=["POST"])
+@default.route('/update/<string:mode>', methods=["POST"])
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     if mode:
