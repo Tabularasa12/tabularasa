@@ -34,7 +34,7 @@ def init_page():
     navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
     page.navbar.end.update(navbar_end)
 
-@default.route('/default')
+@default.route('/default', methods=["POST"])
 def default():
     subprocess.call(["git", "stash", "save"])
     subprocess.call(["git", "pull"])
