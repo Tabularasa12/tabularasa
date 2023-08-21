@@ -47,8 +47,8 @@ class Master(Flask):
         self.page_parameters['title'] = labelize(self.import_name)
         self.page = Page(self.page_parameters)
     
-    def update(mode):
-        mode = True if mode == 'true' or mode == 'True' else False
+    def update():
+        # mode = True if mode == 'true' or mode == 'True' else False
         if request.method == 'POST':
             subprocess.call(["git", "stash", "save"])
             subprocess.call(["git", "pull"])
