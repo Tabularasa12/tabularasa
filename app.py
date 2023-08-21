@@ -34,7 +34,6 @@ def init_page():
     navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
     page.navbar.end.update(navbar_end)
 
-# Pour automatiser la mise jour sur pythonanywhere
 
 @default.route('/')
 @default.route('/index')
