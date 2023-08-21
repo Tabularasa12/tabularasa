@@ -48,13 +48,9 @@ class Master(Flask):
         self.page = Page(self.page_parameters)
     
     def update():
-        if request.method == 'POST' and UPDATE_MODE:
-            commands = [
-                ["git", "stash", "save"],
-                ["git", "pull"]
-            ]
-            for command in commands:
-                exec(f'subprocess.call({command})')
+        if request.method == 'POST':
+            subprocess.call(["git", "stash", UPDATE_MODE])
+            subprocess.call(["git", "pull"])
         return dict()
 
     def _page(self):
