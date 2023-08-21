@@ -48,7 +48,7 @@ def update(mode):
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
 
     json = Json(json_path, sort_key=False)
-    if not exists(json_path):
+    if not exist(json_path):
         json[now()] = f"Début du log pour {domain_name}"
     json[now()] = f"Tentative de mise à jour de {domain_name}"
     if mode:
