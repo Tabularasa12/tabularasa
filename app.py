@@ -59,7 +59,7 @@ def update(mode):
         if request.host == request_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de {domain_name}"
             response = subprocess.call(["git", "pull"])
-            json[now()] = f"{returncode}"
+            json[now()] = f"{response}"
 
     #         import requests
     #         response = requests.post(
