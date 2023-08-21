@@ -41,15 +41,22 @@ def init_page():
 @default.route('/update/<string:mode>', methods=["POST"])
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
-    # log = {f"Tentative de mise à jour de {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
-    # if mode:
-    #     host = 'www.pythonanywhere.com'
-    #     username = 'Tabularasa'
-    #     domain_name = 'tabularasa'
-    #     # request_host = host.replace('www', domain_name)
-    #     request_host = 'tabularasa.pythonanywhere.com'
-    #     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
-    #     log = {f"Début de mise à jour de {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
+    json_path = f'./{DEFAULT_LOG_FILE}'
+    if not isfile(json_path):
+        log = {f"Début du log pour {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
+        json = Json(json_path, sort_key=False, **log)
+    else:
+        json = Json(json_path, sort_key=False)
+        log = json.datas
+        log[f"Tentative de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
+    if mode:
+        host = 'www.pythonanywhere.com'
+        username = 'Tabularasa'
+        domain_name = 'tabularasa'
+        request_host = host.replace('www', domain_name)
+        request_host = 'tabularasa.pythonanywhere.com'
+        token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
+        log[f"Début de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
     #     if request.host == request_host:
     #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
@@ -70,9 +77,9 @@ def update(mode):
     #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
     #         else:
     #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
-    # else:
-    #     log = {f"Mise à jour non activée" : time(DEFAULT_LOG_TIME_FORMAT)}
-    export_log = Json(f'./{DEFAULT_LOG_FILE}', host = request.host, mode=False)
+    else:
+        log["Mise à jour non activée"] = time(DEFAULT_LOG_TIME_FORMAT)
+    json.update(log)
     return dict()
 
 @default.route('/')

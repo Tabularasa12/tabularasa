@@ -1,58 +1,49 @@
 import json
-from os.path import isfile
+from .files import *
 
 class Json:
-    def __init__(self, _path, **objects):
-        if not isfile(_path):
-            with open(_path, 'w') as json_data:
-                json.dump(dict(), json_data, sort_keys = True, indent = 4)
-        self.path = _path
+    def __init__(self, _path, sort_key=True, indent=4, **objects):
+        if _path.endswith('.json'):
+            self.sort_key = sort_key
+            self.indent = indent
+            if not isfile(_path):
+                write(_path, dict())
+            self.path = _path
+            self.update(objects)
+        else:
+            raise TypeError(f"{_path} n'est pas un fichier .json")
 
-        if objects:
-            for k, v in objects.items():
-                if not k in self.keys():
-                    self[k] = v
+    def __getitem__(self, name):
+        return self.datas[name]
 
-    def json_to_obj(self):
+    def __setitem__(self, name, value):
+        datas = self.datas
+        data[name] = value
+        self.update(data)
+    
+    def __delitem__(self, name):
+        datas = self.datas
+        del datas[name]
+        self.update(data)
+
+    def __repr__(self):
+        return str(self.datas)
+
+    @property
+    def datas(self):
         with open(self.path, 'r') as json_data:
             datas = json.load(json_data)
         return datas
 
-    def obj_to_json(self, name, value):
-        content = self.json_to_obj()
-        content[name] = value
-        with open(self.path, 'w') as json_data:
-            json.dump(content, json_data, sort_keys = True, indent = 4)
-
-    def __getitem__(self, name):
-        return self.content[name]
-
-    def __setitem__(self, name, value):
-        self.obj_to_json(name, value)
-    
-    def __delitem__(self, name):
-        content = self.content
-        del content[name]
-        with open(self.path, 'w') as json_data:
-            json.dump(content, json_data, sort_keys = True, indent = 4)
-    
-    def get_content(self):
-        return self.json_to_obj()
-    def set_content(self, dict):
-        self.del_content()
-        for k, v in dict.items():
-            self.__setitem__(k, v)
-    def del_content(self):
-        for i in self.get_content().keys():
-            self.__delitem__(i)
-    content = property(get_content, set_content, del_content)
+    def update(self, datas):
+        if isinstance(datas, dict):
+            with open(self.path, 'w') as json_data:
+                json.dump(datas, json_data, sort_keys = self.sort_key, indent = self.indent)
 
     def keys(self):
-        return self.content.keys()
+        return self.datas.keys()
     def values(self):
-        return self.content.values()
+        return self.datas.values()
     def items(self):
-        return self.content.items()
+        return self.datas.items()
 
-    def __repr__(self):
-        return str(self.content)
