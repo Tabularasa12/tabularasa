@@ -38,7 +38,7 @@ class Json:
     def update(self, datas):
         if isinstance(datas, dict):
             with open(self.path, 'w') as json_data:
-                json.dump(datas, json_data, sort_keys = self.sort_key, indent = self.indent)
+                json.dump(datas, json_data, sort_keys = self.sort_key, indent = self.indent, ensure_ascii=False)
 
     def keys(self):
         return self.datas.keys()
