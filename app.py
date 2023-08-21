@@ -68,7 +68,7 @@ def update(mode):
         #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"{response.stderr}"
     else:
         log[time(DEFAULT_LOG_TIME_FORMAT)] = "Mise à jour désactivée"
-    json.update(log)
+    # json.update(log)
     #     if request.host == request_host:
     #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
@@ -96,7 +96,9 @@ def update(mode):
 @default.route('/index')
 @default.to_page()
 def index():
-    mode = False
+    json = Json(f'./{DEFAULT_LOG_FILE}', sort_key=False)
+    json['essai'] = 'essai'
+    print(json.datas)
     
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),

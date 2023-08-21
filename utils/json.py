@@ -18,13 +18,13 @@ class Json:
 
     def __setitem__(self, name, value):
         datas = self.datas
-        data[name] = value
-        self.update(data)
+        datas[name] = value
+        self.update(datas)
     
     def __delitem__(self, name):
         datas = self.datas
         del datas[name]
-        self.update(data)
+        self.update(datas)
 
     def __repr__(self):
         return str(self.datas)
