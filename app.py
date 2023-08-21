@@ -49,7 +49,7 @@ def update(mode):
         request_host = host.replace('www', domain_name)
         token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
         if request.host == request_host:
-            log[str(time(DEFAULT_LOG_TIME_FORMAT))] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
+            log['essai'] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
             response = subprocess.call(["git", "pull"])
             
