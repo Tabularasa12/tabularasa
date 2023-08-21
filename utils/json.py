@@ -9,7 +9,10 @@ class Json:
             if not isfile(_path):
                 write(_path)
             self.path = _path
-            self.update(objects)
+            datas = self.datas
+            for k, v in objects.items():
+                datas[k] = v
+            self.update(datas)
         else:
             raise TypeError(f"{_path} n'est pas un fichier .json")
 
