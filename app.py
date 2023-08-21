@@ -48,12 +48,10 @@ def update(mode):
     request_host = host.replace('www', domain_name)
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
 
+    json = Json(json_path, sort_key=False)
     if not isfile(json_path):
-        log = {time(DEFAULT_LOG_TIME_FORMAT) : f"Début du log pour {domain_name}"}
-        json = Json(json_path, sort_key=False, **log)
-    else:
-        json = Json(json_path, sort_key=False)
-        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
+        json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début du log pour {domain_name}"
+    json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Tentative de mise à jour de {domain_name}"
     if mode:
         json[time(DEFAULT_LOG_TIME_FORMAT)] = f"Début de mise à jour de {domain_name}"
         # if request.host == request_host:
