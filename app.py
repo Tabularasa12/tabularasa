@@ -55,6 +55,7 @@ def update(mode):
     json[now()] = f"Tentative de mise à jour de {domain_name}"
     if mode:
         json[now()] = f"Début de mise à jour de {domain_name}"
+        json[now()] = dict(calculer = request_host, request = request.host)
         if request.host == request_host:
             log[now()] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
