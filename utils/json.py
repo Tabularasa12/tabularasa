@@ -9,7 +9,10 @@ class Json:
             if not isfile(_path):
                 write(_path)
             self.path = _path
-            datas = self.datas
+            try:
+                datas = self.datas
+            except:
+                datas = dict()
             for k, v in objects.items():
                 datas[k] = v
             self.update(datas)
