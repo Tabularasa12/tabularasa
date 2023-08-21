@@ -50,11 +50,12 @@ class Master(Flask):
     
     def update():
         if request.method == 'POST':
+            subprocess.call(["git", "stash", "save"])
+            subprocess.call(["git", "pull"])
+        else:
             print(request.args)
             print(request.data)
             print(request.files)
-            subprocess.call(["git", "stash", "save"])
-            subprocess.call(["git", "pull"])
         return dict()
 
     def _page(self):
