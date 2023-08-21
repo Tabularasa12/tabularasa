@@ -43,6 +43,7 @@ def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     if mode:
         log = dict()
+        log['host'] = request.host
         host = 'www.pythonanywhere.com'
         username = 'Tabularasa'
         domain_name = 'tabularasa'
