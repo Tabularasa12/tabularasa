@@ -1,4 +1,4 @@
-
+import subprocess
 from importlib import import_module
 from flask import request, url_for
 
@@ -46,6 +46,16 @@ def init_page():
 #             return '', 200
 #         else:
 #             return '', 400
+
+@default.route('/update')
+@default.to_page()
+def update():
+    if request.method == 'POST':
+        subprocess.run(["git", "pull", "https://github.com/Tabularasa12/tabularasa.git"])
+        body = DIV("Mise à jour de l'application effectuée")
+    else:
+        body = DIV("Mise à jour de l'application ")
+    return locals()
 
 @default.route('/')
 @default.route('/index')
