@@ -41,6 +41,7 @@ def init_page():
 @default.route('/update/<string:mode>', methods=["POST"])
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
+    log = {f"Tentative de mise à jour de {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
     if mode:
         host = 'www.pythonanywhere.com'
         username = 'Tabularasa'
@@ -68,7 +69,9 @@ def update(mode):
                 log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
             else:
                 log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
-        export_log = Json(f'./{DEFAULT_LOG_FILE}', host = request.host, update = log)
+    else:
+        log = {f"Mise à jour non activée" : request.host}
+    export_log = Json(f'./{DEFAULT_LOG_FILE}', host = request.host, update = log)
     return dict()
 
 @default.route('/')
