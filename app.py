@@ -57,6 +57,8 @@ def update(mode):
         log[f"Tentative de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
     if mode:
         log[f"Début de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
+        log["host"] = dict(request=request.host, calculer=request_host)
+        log["request host"] = request.host
     else:
         log["Mise à jour non activée"] = time(DEFAULT_LOG_TIME_FORMAT)
     json.update(log)
