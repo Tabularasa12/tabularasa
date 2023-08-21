@@ -1,4 +1,4 @@
-#essai
+#essai2
 
 import subprocess
 from time import strftime as time
@@ -41,7 +41,7 @@ def init_page():
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     if mode:
-        log = Json('log.json')
+        log = Json('./log.json')
         host = 'www.pythonanywhere.com'
         username = 'Tabularasa'
         domain_name = 'tabularasa'
