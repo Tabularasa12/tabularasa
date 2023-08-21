@@ -53,7 +53,7 @@ def update():
     if request.method == 'POST':
         subprocess.call(["git", "pull"])
     else:
-        subprocess.call(["git", "stach", "save"])
+        subprocess.call(["git", "stash", "save"])
         subprocess.call(["git", "pull"])
     return dict(body = request.method)
 
