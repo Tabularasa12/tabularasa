@@ -42,6 +42,12 @@ def init_page():
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     json_path = f'./{DEFAULT_LOG_FILE}'
+    host = 'www.pythonanywhere.com'
+    username = 'Tabularasa'
+    domain_name = 'tabularasa'
+    request_host = host.replace('www', domain_name)
+    token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
+
     if not isfile(json_path):
         log = {f"Début du log pour {domain_name}" : time(DEFAULT_LOG_TIME_FORMAT)}
         json = Json(json_path, sort_key=False, **log)
@@ -50,13 +56,10 @@ def update(mode):
         log = json.datas
         log[f"Tentative de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
     if mode:
-        host = 'www.pythonanywhere.com'
-        username = 'Tabularasa'
-        domain_name = 'tabularasa'
-        request_host = host.replace('www', domain_name)
-        request_host = 'tabularasa.pythonanywhere.com'
-        token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
         log[f"Début de mise à jour de {domain_name}"] = time(DEFAULT_LOG_TIME_FORMAT)
+    else:
+        log["Mise à jour non activée"] = time(DEFAULT_LOG_TIME_FORMAT)
+    json.update(log)
     #     if request.host == request_host:
     #         log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Récupération des modifications sur le dépot Github de '{domain_name}'"
             
@@ -77,15 +80,15 @@ def update(mode):
     #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"L'application '{domain_name}' à bien été relancée"
     #         else:
     #             log[time(DEFAULT_LOG_TIME_FORMAT)] = f"Un problème est survenu lors du rechargement de l'application '{domain_name}'"
-    else:
-        log["Mise à jour non activée"] = time(DEFAULT_LOG_TIME_FORMAT)
-    json.update(log)
+    
     return dict()
 
 @default.route('/')
 @default.route('/index')
 @default.to_page()
 def index():
+    mode = False
+    
     body = A(
         IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
         _href=url_for('index'),

@@ -88,7 +88,7 @@ def move(source, dest, replace=True):
     else:
         raise FileExistsError("{} already exist".format(dest))
 
-def write(url, content=None, mode='w'):
+def write(url, content='', mode='w'):
     with open(url, mode) as fp:
         return fp.write(content)
 

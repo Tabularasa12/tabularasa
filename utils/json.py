@@ -7,7 +7,7 @@ class Json:
             self.sort_key = sort_key
             self.indent = indent
             if not isfile(_path):
-                write(_path, dict())
+                write(_path)
             self.path = _path
             self.update(objects)
         else:
