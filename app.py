@@ -1,7 +1,7 @@
 import subprocess
 from importlib import import_module
 from flask import request, url_for
-#esssai
+
 from utils.apps import NECESSARIES, Master, App
 from utils.bulma import bulma
 from utils.icons import icons
