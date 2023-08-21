@@ -40,8 +40,7 @@ class Master(Flask):
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
         
-        if UPDATE_MODE:
-            self.add_url_rule('/update', 'update', view_func=self.update, methods=["POST"])
+        self.add_url_rule('/update', 'update', view_func=self.update, methods=["POST"])
 
         self.page_parameters = Parameters(defaults=NECESSARIES['config'])
         self.page_parameters['name'] = labelize(self.import_name)
@@ -49,7 +48,7 @@ class Master(Flask):
         self.page = Page(self.page_parameters)
     
     def update():
-        if request.method == 'POST':
+        if request.method == 'POST' and UPDATE_MODE:
             subprocess.call(["git", "stash", "save"])
             subprocess.call(["git", "pull"])
         return dict()
