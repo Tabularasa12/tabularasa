@@ -45,9 +45,8 @@ def update(mode):
 
     host = 'pythonanywhere.com'
     username = 'Tabularasa'
-    domain_name = f'{username}.{host}'
     http_host = f'www.{host}'
-    request_host = f'{domain_name}.{host}'
+    request_host = f'{username}.{host}'
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
     message =''
     if not isfile(json_path):
@@ -69,7 +68,7 @@ def update(mode):
 
             import requests
             response = requests.post(
-                f'https://{http_host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
+                f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
