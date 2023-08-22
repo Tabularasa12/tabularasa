@@ -45,8 +45,10 @@ def update(mode):
 
     host = 'pythonanywhere.com'
     username = 'Tabularasa'
+    app_name = 'tabularasa'
     http_host = f'www.{host}'
-    request_host = f'{username}.{host}'
+    request_host = f'{app_name}.{host}'
+    domaine_name = f'{username}.{host}'
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
     message =''
     if not isfile(json_path):
@@ -58,8 +60,8 @@ def update(mode):
     json[now()] = f"Tentative de mise à jour de {request_host}"
     if mode:
         json[now()] = f"Début de mise à jour de {request_host}"
-        json[now()] = f'{request.host}/{http_host}'
-        if request.host == http_host:
+        json[now()] = f'{request.host}/{request_host}'
+        if request.host == request_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
             response = subprocess.call(["git", "pull"])
             if not response:
@@ -69,7 +71,7 @@ def update(mode):
 
             import requests
 
-            command = f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/'
+            command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
             response = requests.post(
                 command,
                 headers={'Authorization': 'Token {token}'.format(token=token)}
