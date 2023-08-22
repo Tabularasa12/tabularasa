@@ -64,8 +64,9 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            import requests
-            log[now()] = requests
+            import subprocess
+            restart = subprocess.run(['python3', 'restart.py'])
+            log[now()] = restart
             # response = requests.post(
             #     f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
             #     headers={'Authorization': f'Token {token}'}
