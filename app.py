@@ -69,7 +69,7 @@ def update(mode):
                 f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': f'Token {token}'}
             )
-            log[now()] = response
+            log[now()] = response.status_code
             if response.status_code == 200:
                 log[now()] = f"L'application {domain_name} à bien été relancée"
             else:
