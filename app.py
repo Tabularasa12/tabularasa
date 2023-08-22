@@ -1,5 +1,6 @@
 #essai2
 
+import requests
 import subprocess
 from importlib import import_module
 from flask import request, url_for
@@ -64,7 +65,6 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            import requests
             response = requests.post(
                 f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': f'Token {token}'}
