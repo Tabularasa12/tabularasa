@@ -78,7 +78,7 @@ def update(mode):
 
             import requests
 
-            response = requests.post(
+            response = requests.get(
                 f'https://{host}/api/v0/user/{username}/webapps/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
