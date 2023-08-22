@@ -60,7 +60,7 @@ def update(mode):
         json[now()] = f"Début de mise à jour de {request_host}"
         command = f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/'
         json[now()] = command
-        if request.host == request_host:
+        if request.host == http_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
             response = subprocess.call(["git", "pull"])
             if not response:
