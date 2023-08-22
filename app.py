@@ -58,8 +58,7 @@ def update(mode):
     json[now()] = f"Tentative de mise à jour de {request_host}"
     if mode:
         json[now()] = f"Début de mise à jour de {request_host}"
-        command = f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/'
-        json[now()] = command
+        json[now()] = f'{request.host}/{http_host}'
         if request.host == http_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
             response = subprocess.call(["git", "pull"])
@@ -69,6 +68,8 @@ def update(mode):
                 json[now()] = f"Impossible de récupérer les modifications"
 
             import requests
+
+            command = f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/'
             response = requests.post(
                 command,
                 headers={'Authorization': 'Token {token}'.format(token=token)}
