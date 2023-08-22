@@ -65,7 +65,7 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            response = requests.post(
+            response = requests.get(
                 f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': f'Token {token}'}
             )
