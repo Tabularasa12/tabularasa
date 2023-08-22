@@ -42,10 +42,12 @@ def init_page():
 def update(mode):
     mode = True if mode == 'true' or mode == 'True' else False
     json_path = f'./{DEFAULT_LOG_FILE}'
-    host = 'www.pythonanywhere.com'
+
+    host = 'pythonanywhere.com'
     username = 'Tabularasa'
-    domain_name = 'tabularasa'
-    request_host = host.replace('www', domain_name)
+    domain_name = f'{username}.{host}'
+    http_host = f'www.{host}'
+    request_host = f'{domain_name}.{host}'
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
     message =''
     if not isfile(json_path):
@@ -67,7 +69,7 @@ def update(mode):
 
             import requests
             response = requests.post(
-                f'https://{host}/api/v0/user/{username}/webapps/{username}/reload/',
+                f'https://{http_host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
