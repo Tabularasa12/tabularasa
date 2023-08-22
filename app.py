@@ -50,16 +50,18 @@ def update(mode):
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
     message =''
     if not isfile(json_path):
-        message = f"Début du log pour {domain_name}"
+        message = f"Début du log pour {request_host}"
     json = Json(json_path, sort_key=False)
     if message:
         json[now()] = message
     json[now()] = "--------------------------------------------"
-    json[now()] = f"Tentative de mise à jour de {domain_name}"
+    json[now()] = f"Tentative de mise à jour de {request_host}"
     if mode:
-        json[now()] = f"Début de mise à jour de {domain_name}"
+        json[now()] = f"Début de mise à jour de {request_host}"
+        command = f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/'
+        json[now()] = command
         if request.host == request_host:
-            json[now()] = f"Récupération des modifications sur le dépot Github de {domain_name}"
+            json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
             response = subprocess.call(["git", "pull"])
             if not response:
                 json[now()] = f"Récupération des modifications effectuée"
@@ -68,7 +70,7 @@ def update(mode):
 
             import requests
             response = requests.post(
-                f'https://{http_host}/api/v0/user/{username}/webapps/{request_host}/reload/',
+                command,
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
