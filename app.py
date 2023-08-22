@@ -65,15 +65,19 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
+            import requests
+
             response = requests.get(
-                f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
-                headers={'Authorization': f'Token {token}'}
+                'https://{host}/api/v0/user/{username}/cpu/'.format(
+                    host=host, username=username
+                ),
+                headers={'Authorization': 'Token {token}'.format(token=token)}
             )
-            log[now()] = response.status_code
             if response.status_code == 200:
-                log[now()] = f"L'application {domain_name} à bien été relancée"
+                json[now()] = 'CPU quota info:'
+                json[now()] = response.content
             else:
-                log[now()] = f"Un problème est survenu lors du rechargement de l'application {domain_name}"
+                json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
     else:
         json[now()] = "Mise à jour désactivée"
         
