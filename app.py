@@ -65,21 +65,9 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            # response = requests.post(
-            #     f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
-            #     headers={'Authorization': f'Token {token}'}
-            # )
-            # log[now()] = response.status_code
-            # if response.status_code == 200:
-            #     log[now()] = f"L'application {domain_name} à bien été relancée"
-            # else:
-            #     log[now()] = f"Un problème est survenu lors du rechargement de l'application {domain_name}"
-            
-
             import requests
-
             response = requests.post(
-                f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
+                f'https://{host}/api/v0/user/{username}/webapps/{username}/reload/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
