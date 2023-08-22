@@ -78,8 +78,8 @@ def update(mode):
 
             import requests
 
-            response = requests.get(
-                f'https://{host}/api/v0/user/{username}/webapps/',
+            response = requests.post(
+                f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
