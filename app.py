@@ -79,9 +79,7 @@ def update(mode):
             import requests
 
             response = requests.post(
-                'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
-                    host=host, username=username, domain_name=domain_name
-                ),
+                f'https://{host}/api/v0/user/{username}/webapps/',
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
             if response.status_code == 200:
