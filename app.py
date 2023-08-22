@@ -1,4 +1,4 @@
-#essai2
+#essai1
 
 import requests
 import subprocess
@@ -65,11 +65,22 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
+            # response = requests.post(
+            #     f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
+            #     headers={'Authorization': f'Token {token}'}
+            # )
+            # log[now()] = response.status_code
+            # if response.status_code == 200:
+            #     log[now()] = f"L'application {domain_name} à bien été relancée"
+            # else:
+            #     log[now()] = f"Un problème est survenu lors du rechargement de l'application {domain_name}"
+            
+
             import requests
 
             response = requests.get(
-                'https://{host}/api/v0/user/{username}/cpu/'.format(
-                    host=host, username=username
+                'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
+                    host=host, username=username, domain_name=domain_name
                 ),
                 headers={'Authorization': 'Token {token}'.format(token=token)}
             )
