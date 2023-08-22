@@ -64,18 +64,16 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            import subprocess
-            restart = subprocess.run(['python3', 'restart.py'])
-            log[now()] = restart
-            # response = requests.post(
-            #     f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
-            #     headers={'Authorization': f'Token {token}'}
-            # )
-            # log[now()] = response
-            # if response.status_code == 200:
-            #     log[now()] = f"L'application {domain_name} à bien été relancée"
-            # else:
-            #     log[now()] = f"Un problème est survenu lors du rechargement de l'application {domain_name}"
+            import requests
+            response = requests.post(
+                f'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/',
+                headers={'Authorization': f'Token {token}'}
+            )
+            log[now()] = response
+            if response.status_code == 200:
+                log[now()] = f"L'application {domain_name} à bien été relancée"
+            else:
+                log[now()] = f"Un problème est survenu lors du rechargement de l'application {domain_name}"
     else:
         json[now()] = "Mise à jour désactivée"
         
@@ -105,5 +103,5 @@ def init_page():
 default.import_apps(NECESSARIES['apps'])
 
 default.register_blueprint(admin)
-print(default.url_map)
-print(default.blueprints)
+# print(default.url_map)
+# print(default.blueprints)

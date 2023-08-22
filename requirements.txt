@@ -1,3 +1,4 @@
 flask
 easydict
 libsass
+requests
