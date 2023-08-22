@@ -40,9 +40,9 @@ def init_page():
 
 @default.route('/update/<string:mode>', methods=["POST"])
 def update(mode):
+    update_log_file = 'update_log.txt'
     mode = True if mode == 'true' or mode == 'True' else False
-    json_path = f'./{DEFAULT_LOG_FILE}'
-
+    log_path = f'./{DEFAULT_LOG_FILE}'
     host = 'pythonanywhere.com'
     username = 'Tabularasa'
     app_name = 'tabularasa'
@@ -51,22 +51,19 @@ def update(mode):
     domaine_name = f'{username}.{host}'
     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
     message =''
-    if not isfile(json_path):
-        message = f"Début du log pour {request_host}"
-    json = Json(json_path, sort_key=False)
-    if message:
-        json[now()] = message
-    json[now()] = "--------------------------------------------"
-    json[now()] = f"Tentative de mise à jour de {request_host}"
+    if not isfile(log_path):
+        write(log_path, f"{now()}-> Début du log pour {request_host}")
+    write(log_path, f"{now()}-> --------------------------------------------", 'a')
+    write(log_path, f"{now()}-> Tentative de mise à jour de {request_host}", 'a')
     if mode:
-        json[now()] = f"Début de mise à jour de {request_host}"
+        write(log_path, f"{now()}-> Début de mise à jour de {request_host}", 'a')
         if request.host == request_host:
-            json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
+            write(log_path, f"{now()}-> Récupération des modifications sur le dépot Github de {request_host}", 'a')
             response = subprocess.call(["git", "pull"])
             if not response:
-                json[now()] = f"Récupération des modifications effectuée"
+                write(log_path, f"{now()}-> Récupération des modifications effectuée", 'a')
             else:
-                json[now()] = f"Impossible de récupérer les modifications"
+                write(log_path, f"{now()}-> Impossible de récupérer les modifications", 'a')
 
             # import requests
 
@@ -81,9 +78,7 @@ def update(mode):
             # else:
             #     json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
     else:
-        json[now()] = "Mise à jour désactivée"
-        
-    
+        write(log_path, f"{now()}-> Mise à jour désactivée", 'a')
     return dict()
 
 @default.route('/')
