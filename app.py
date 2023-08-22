@@ -60,7 +60,6 @@ def update(mode):
     json[now()] = f"Tentative de mise à jour de {request_host}"
     if mode:
         json[now()] = f"Début de mise à jour de {request_host}"
-        json[now()] = f'{request.host}/{request_host}'
         if request.host == request_host:
             json[now()] = f"Récupération des modifications sur le dépot Github de {request_host}"
             response = subprocess.call(["git", "pull"])
@@ -69,18 +68,18 @@ def update(mode):
             else:
                 json[now()] = f"Impossible de récupérer les modifications"
 
-            import requests
+            # import requests
 
-            command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
-            response = requests.post(
-                command,
-                headers={'Authorization': 'Token {token}'.format(token=token)}
-            )
-            if response.status_code == 200:
-                json[now()] = 'CPU quota info:'
-                json[now()] = response.content
-            else:
-                json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
+            # command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
+            # response = requests.post(
+            #     command,
+            #     headers={'Authorization': 'Token {token}'.format(token=token)}
+            # )
+            # if response.status_code == 200:
+            #     json[now()] = 'CPU quota info:'
+            #     json[now()] = response.content
+            # else:
+            #     json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
     else:
         json[now()] = "Mise à jour désactivée"
         
