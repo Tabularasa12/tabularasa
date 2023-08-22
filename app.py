@@ -78,7 +78,7 @@ def update(mode):
 
             import requests
 
-            response = requests.get(
+            response = requests.post(
                 'https://{host}/api/v0/user/{username}/webapps/{domain_name}/reload/'.format(
                     host=host, username=username, domain_name=domain_name
                 ),
