@@ -26,7 +26,7 @@ class Config(object):
     )
 
 class Production(Config):
-    PREFERRED_URL_SCHEME = 'https'
+    PREFERRED_URL_SCHEME = 'http'
     SERVER_NAME = 'tabularasa.pythonanywhere.com'
     APPLICATION_ROOT = '/'
 
