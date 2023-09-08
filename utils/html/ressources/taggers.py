@@ -161,7 +161,7 @@ class Tagger(TAGGER):
         self._class = Class(_class)
         self._style = Style(_style)
         class_name = self.__class__.__name__
-        if class_name not in __all__:
+        if class_name.upper() not in __all__:
             self._class += class_name.lower()
         self._class
         self.color = color
@@ -188,7 +188,7 @@ class Tagger(TAGGER):
             object.__delattr__(self, name)
 
     def update(self, *children, **attributes):
-        self.children = children if children else copy(self.children)
+        self.children = [*children] if children else copy(self.children)
         self.attributes.update(**attributes)
 
     def get_class(self): return self['_class']

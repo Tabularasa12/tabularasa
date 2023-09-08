@@ -1,9 +1,11 @@
-from flask import request
-from utils.url import URL
-from .taggers import Tagger, DIV, SPAN
-from .elements import Button
+from flask import redirect, request
 
-__all__ = ['Navitem', 'Navbar', 'Divider', 'Dropdown']
+from utils.url import URL
+
+from .elements import Button
+from .taggers import DIV, SPAN, Tagger
+
+# __all__ = ['Navitem', 'Navbar', 'Divider', 'Dropdown']
 __all__ = ['Navitem', 'Navbar']
 
 class Burger(Button):
@@ -53,6 +55,8 @@ class Navitem(Button):
     #     if activate(self.list.children):
     #         self.link._class += 'is-active'
 
+
+AUTORIZED_POSITIONS = ['top', 'bottom']
 class Navbar(Tagger):
     def __init__(self, starts=[], ends=[], **attributes):
         if not isinstance(starts, list): starts=[starts]
@@ -76,10 +80,36 @@ class Navbar(Tagger):
         attributes["_aria-label"] = "main navigation"
         Tagger.__init__(self, 'nav', *children, **attributes)
         self._class += "is-fullhd"
+    
+    def __get_position__(self):
+        for position in AUTORIZED_POSITIONS:
+            if f'is-fixed-{position}' in self._class.list:
+                return position
+        return None
+    def __set_position__(self, name):
+        if name in AUTORIZED_POSITIONS:
+            hold = self.__get_position__()
+            self._class.replace(f'is-fixed-{hold}', f'is-fixed-{name}')
+            if 'parent' in self.__dict__.keys():
+                element = self.parent
+                while element.name != 'HTML':
+                    element = element.parent
+                
+                element._class.replace(f'has-navbar-fixed-{hold}', f'has-navbar-fixed-{name}')
+            for navitem in self.start.children+self.end.children:
+                if isinstance(navitem, Navitem):
+                    if 'has-dropdown' in navitem._class.list:
+                        if name == 'top':
+                            navitem._class -= 'has-dropdown-up'
+                        else:
+                            navitem._class += 'has-dropdown-up'
+    position = property(__get_position__, __set_position__)
 
     @property
     def open(self):
-        self.burger['_href'] = request.url_rule
+        url = URL(request.full_path)
+        del url.vars['navbar']
+        self.burger['_href'] = url()
         self.menu._class += "is-active"
         self.burger._class += "is-active"
 
@@ -90,6 +120,12 @@ class Navbar(Tagger):
         self.burger['_href'] = url()
         self.menu._class -= "is-active"
         self.burger._class -= "is-active"
+
+    @property
+    def is_open(self):
+        if "is-active" in self.menu._class.list:
+            return True
+        return False
 
     @property
     def activate(self):

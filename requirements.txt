@@ -1,4 +1,9 @@
 flask
-easydict
+flask-sqlalchemy
+flask_mail
+flask-wysiwyg
+pdfkit
 libsass
 requests
+# easydict
+# browser-history

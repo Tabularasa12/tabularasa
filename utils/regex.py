@@ -1,6 +1,6 @@
 
 REGEX = dict(
-    apps = "^[a-zA-Z][a-zA-Z0-9 -_]+$",
+    apps = "^[a-zA-Z][a-zA-Z0-9 -_àçéèêëïöôùüû]+$",
     controllers = "^[a-zA-Z0-9]+(.py)$",
     name_begin_by_letter = "^[a-zA-Z].+$",
     name_alphanumeric = "^[a-zA-Z][a-zA-Z0-9_]+$",

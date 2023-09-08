@@ -87,7 +87,7 @@ def _vk(k):
 class TAGGER:
     def __init__(self, name, *children, **attributes):
         self._name = name
-        self.children = list(children)
+        self.children = [*children]
         self.attributes = attributes
         for child in self.children:
             if isinstance(child, TAGGER):
@@ -141,6 +141,7 @@ class TAGGER:
         self.children.insert(i, value)
 
     def append(self, value):
+        # print(self.children)
         self.children.append(value)
 
     def __delitem__(self, key):

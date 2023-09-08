@@ -2,7 +2,7 @@ import json
 from .files import *
 
 class Json:
-    def __init__(self, _path, sort_key=True, indent=4, **objects):
+    def __init__(self, _path, sort_key=True, indent=4, defaults=dict()):
         if _path.endswith('.json'):
             self.sort_key = sort_key
             self.indent = indent
@@ -13,8 +13,10 @@ class Json:
                 datas = self.datas
             except:
                 datas = dict()
-            for k, v in objects.items():
-                datas[k] = v
+            if isinstance(defaults, dict):
+                for k, v in defaults.items():
+                    if not k in datas.keys():
+                        datas[k] = v
             self.update(datas)
         else:
             raise TypeError(f"{_path} n'est pas un fichier .json")

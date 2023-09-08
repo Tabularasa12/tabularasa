@@ -1,4 +1,7 @@
 import re
+from .files import join, sep
+from browser_history import get_history
+from flask import request
 class URL:
     def __init__(self, *args, _vars=dict(), pointer=''):
         self.args = [*args]
@@ -40,6 +43,18 @@ class URL:
             return pointer_str
         return None
 
+    @property
+    def path(self):
+        ret = ''
+        for arg in self.args:
+            ret = join(ret, arg)
+        return ret
+    
+    @property
+    def rule(self):
+        ret = '.'.join(self.args).strip(sep())
+        return ret
+
     def __call__(self):
         url = '/'.join(self.args)
         if self.vars:
@@ -49,9 +64,39 @@ class URL:
         if self.pointer:
             url += f'#{self.pointer}'
         return url
-
-    def __repr__(self):
-        return self()
     
     def __str__(self):
         return self()
+
+class History:
+    def __init__(self):
+        self._list = []
+    
+    @property
+    def update(self):
+        histories = get_history().histories
+        histories_url = list()
+        for history in histories:
+            histories_url.append(history[-1])
+        routes = list()
+        host = request.host_url.rstrip('/')
+        for _url in histories_url:
+            route = _url.split(host)
+            routes.append(route[-1])
+        self._list = routes
+    
+    def __getitem__(self, num):
+        # self.update
+        if len(self._list):
+            return self._list[num]
+        return None
+    
+    def __call__(self):
+        # self.update
+        return self._list
+    
+    # def __str__(self):
+    #     ret = 'Historique de navigation :'
+    #     for num, el in enumerate(self._list):
+    #         ret += f'\n{num} -> {el[0]} -> {el[1]}'
+    #     return ret

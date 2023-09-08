@@ -12,11 +12,6 @@ from utils.files import *
 from utils.regex import REGEX
 from utils.html.ressources.taggers import Tagger
 
-def callize(obj):
-    if callable(obj):
-        return obj()
-    return obj
-
 def labelize(text=""):
     text=str(text)
     if "_" in text:

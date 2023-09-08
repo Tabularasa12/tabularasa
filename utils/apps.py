@@ -1,15 +1,31 @@
-from importlib import import_module
-from flask import Flask, Blueprint, Response, render_template, request, Markup, url_for
-from flask.helpers import send_from_directory
 from functools import wraps
-from .icons import icons
-from .bulma import bulma
-from .functions import control_path_necessaries, labelize
-from .files import *
-from .html import *
-from .regex import REGEX
-from .parameters import Parameters, edict
+from importlib import import_module
+
+from flask import (
+    Blueprint,
+    Flask,
+    Markup,
+    Response,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
+from flask.helpers import send_from_directory
 from settings import *
+
+from .bulma import bulma
+from .files import *
+from .functions import control_path_necessaries, labelize
+from .html import *
+from .icons import icons
+from .parameters import Parameters, edict
+from .regex import REGEX
+from .url import URL
+from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+from config import *
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -28,31 +44,73 @@ def add_folder_route(app, name, path, download=False):
     view_func = lambda filename: send_from_directory(path, filename, as_attachment=download)
     app.add_url_rule(rule, name, view_func=view_func)
 
+mail = Mail()
+db = SQLAlchemy()
+from models.users import *
 
 class Master(Flask):
     def __init__(self, import_name, **attributes):
         Flask.__init__(self, import_name, **attributes)
-        add_folder_route(self, 'apps', join(self.root_path, NECESSARIES['apps']))
+        add_folder_route(self, APPS_FOLDER_NAME, join(self.root_path, NECESSARIES['apps']))
         self.template_folder = dirname(NECESSARIES['template'])
         add_folder_route(self, 'css', dirname(bulma.path), download=DEFAULT_FILE_DOWNLOAD)
         add_folder_route(self, 'icons', join(self.root_path, NECESSARIES['icons']), download=DEFAULT_FILE_DOWNLOAD)
+        self.name = labelize(import_name)
+        self.title = labelize(import_name)
+        self.config.from_object(Development())
+        mail.init_app(self)
+        db.init_app(self)
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
 
-        self.page_parameters = Parameters(defaults=NECESSARIES['config'])
-        self.page_parameters['name'] = labelize(self.import_name)
-        self.page_parameters['title'] = labelize(self.import_name)
-        self.page = Page(self.page_parameters)
+        with self.app_context():
+            db.create_all()
+            self.page = Page(self)
 
-    def _page(self):
-        page = self.page
-        page.bulma['_href'] = url_for('css', filename=bulma.css)
-        page.icons['_href'] = url_for('icons', filename=icons.css)
-        page.favicon['_href'] = url_for('static', filename=page.p.favicon)
-        page.logo['_href'] = url_for('static', filename=page.p.logo)
-        page.navbar.activate
-        return page
+
+        @self.route('/update/<string:mode>', methods=["POST"])
+        def update(mode):
+            update_log_file = 'update_log.txt'
+            mode = True if mode == 'true' or mode == 'True' else False
+            log_path = f'./{DEFAULT_LOG_FILE}'
+            host = 'pythonanywhere.com'
+            username = 'Tabularasa'
+            app_name = 'tabularasa'
+            http_host = f'www.{host}'
+            request_host = f'{app_name}.{host}'
+            domaine_name = f'{username}.{host}'
+            token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
+            message =''
+            if not isfile(log_path):
+                write(log_path, f"{now()}-> Début du log pour {request_host}")
+                write(log_path, f"{now()}-> --------------------------------------------", 'a')
+                write(log_path, f"{now()}-> Tentative de mise à jour de {request_host}", 'a')
+            if mode:
+                write(log_path, f"{now()}-> Début de mise à jour de {request_host}", 'a')
+                if request.host == request_host:
+                    write(log_path, f"{now()}-> Récupération des modifications sur le dépot Github de {request_host}", 'a')
+                    response = subprocess.call(["git", "pull"])
+                    if not response:
+                        write(log_path, f"{now()}-> Récupération des modifications effectuée", 'a')
+                    else:
+                        write(log_path, f"{now()}-> Impossible de récupérer les modifications", 'a')
+
+                    # import requests
+
+                    # command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
+                    # response = requests.post(
+                    #     command,
+                    #     headers={'Authorization': 'Token {token}'.format(token=token)}
+                    # )
+                    # if response.status_code == 200:
+                    #     json[now()] = 'CPU quota info:'
+                    #     json[now()] = response.content
+                    # else:
+                    #     json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
+            else:
+                write(log_path, f"{now()}-> Mise à jour désactivée", 'a')
+                return dict()
 
     def to_page(self, template=DEFAUT_TEMPLATE):
         def decorator(f):
@@ -67,8 +125,13 @@ class Master(Flask):
                 elif not isinstance(ctx, dict):
                     return ctx
                 for k, v in ctx.items():
-                    if isinstance(v, Tagger):
-                        exec(f'self.page.{k}.update(v)')
+                    if self.page.get_children_by_id(k):
+                        if isinstance(v, (Tagger, int, str)):
+                            exec(f'self.page.{k}.update(v)')
+                        if isinstance(v, (list, tuple)):
+                            exec(f'self.page.{k}.update(*v)')
+                        if isinstance(v, (dict)):
+                            exec(f'self.page.{k}.update(**v)')
                 return render_template(DEFAUT_TEMPLATE, page=Markup(self.page))
             return decorated_function
         return decorator
@@ -93,21 +156,18 @@ class App(Blueprint):
         base_path = self.root_path.split(self.master.root_path)[1]
         self.static_folder = join(self.root_path, 'static')
         parameters_file = join(base_path.strip(sep()), DEFAULT_CONFIG_FILE_NAME)
-        self.page_parameters = Parameters(defaults=parameters_file)
-        self.page_parameters['name'] = labelize(self.name)
-        self.page_parameters['title'] = f'{labelize(master.name)} -> {self.name}'
-        self.page = Page(self.page_parameters)
-
+        self.page = Page(parameters_file)
+        
+        self.page.title.update(labelize(self.name))
 
     controllers = Master.controllers
     to_page = Master.to_page
-    
+
     def _page(self):
         page = self.page
         page.bulma['_href'] = url_for('css', filename=bulma.css)
         page.icons['_href'] = url_for('icons', filename=icons.css)
-        page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p.favicon)
-        page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p.logo)
-        page.navbar.activate
+        page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p['favicon'])
+        page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p['logo'])
         return page
 

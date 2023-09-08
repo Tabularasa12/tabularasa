@@ -1,19 +1,24 @@
 #essai1
-
 import requests
+import secrets
 import subprocess
 from importlib import import_module
-from flask import request, url_for
-from utils.apps import NECESSARIES, Master, App
+import pdfkit
+from flask import request, url_for, redirect, session
+from utils.apps import NECESSARIES, Master, App, db, mail
 from utils.bulma import bulma
 from utils.icons import icons
 from utils.files import *
+from utils.url import URL
 from utils.functions import labelize, now
 from utils.html import *
 from utils.regex import REGEX
 from utils.parameters import Parameters
-from utils.json import Json
+from utils.json import json, Json
 from settings import *
+from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail, Message
+from config import Development
 
 # A essayer pour avoir plusieurs application valides l'une à côté de l'autre
 # from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -24,85 +29,54 @@ from settings import *
 #     '/backend': backend
 # })
 
-default = Master(basename(dirname(__file__)))
+def create_app():
+    default = Master(basename(dirname(__file__)))
+    default.page._style += "background-image: linear-gradient(to right top, yellow, purple);"
+    default.page.body._class += 'is-justify-content-center'
 
-@default.before_request
-def init_page():
-    page = default._page()
-    page.color = 'transparent'
-    page._style += "background-image: linear-gradient(to right top, yellow, purple);"
-    page.body._class += 'is-justify-content-center'
-    page.burger.text_color = 'white'
-    page.navbar.color = 'black'
-    page.navbar.link.hide
-    navbar_end = Navitem(Icon('cog', color='white'),_href=url_for('admin.index'))
-    page.navbar.end.update(navbar_end)
+    @default.route('/')
+    @default.route('/index')
+    @default.to_page()
+    def index():
+        logo = A(
+            IMG(_src=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), _alt="Logo", _style='max-width:300px;'),
+            _href=url_for('index'),
+            _title = labelize("recharger la page"),
+        )
 
-@default.route('/update/<string:mode>', methods=["POST"])
-def update(mode):
-    update_log_file = 'update_log.txt'
-    mode = True if mode == 'true' or mode == 'True' else False
-    log_path = f'./{DEFAULT_LOG_FILE}'
-    host = 'pythonanywhere.com'
-    username = 'Tabularasa'
-    app_name = 'tabularasa'
-    http_host = f'www.{host}'
-    request_host = f'{app_name}.{host}'
-    domaine_name = f'{username}.{host}'
-    token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
-    message =''
-    if not isfile(log_path):
-        write(log_path, f"{now()}-> Début du log pour {request_host}")
-    write(log_path, f"{now()}-> --------------------------------------------", 'a')
-    write(log_path, f"{now()}-> Tentative de mise à jour de {request_host}", 'a')
-    if mode:
-        write(log_path, f"{now()}-> Début de mise à jour de {request_host}", 'a')
-        if request.host == request_host:
-            write(log_path, f"{now()}-> Récupération des modifications sur le dépot Github de {request_host}", 'a')
-            response = subprocess.call(["git", "pull"])
-            if not response:
-                write(log_path, f"{now()}-> Récupération des modifications effectuée", 'a')
-            else:
-                write(log_path, f"{now()}-> Impossible de récupérer les modifications", 'a')
+        # default.page.color = 'transparent'
+        # apps = [Button(app.name, _href=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
+        # body = [Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered')]
+        body = Buttons(logo, _class='is-centered')
 
-            # import requests
+        
 
-            # command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
-            # response = requests.post(
-            #     command,
-            #     headers={'Authorization': 'Token {token}'.format(token=token)}
-            # )
-            # if response.status_code == 200:
-            #     json[now()] = 'CPU quota info:'
-            #     json[now()] = response.content
-            # else:
-            #     json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
-    else:
-        write(log_path, f"{now()}-> Mise à jour désactivée", 'a')
-    return dict()
+        msg = Message("Hello",
+            sender = 'locauxmotives@gmail.com',
+            recipients=['etienne@semou.fr'],
+            body = 'ok, merci',
+            html = default.page.content.xml(),
+        )
+        pdfkit.from_url('https://tabularasa.pythonanywhere.com/index', 'static/out.pdf')
+        # with default.open_resource(url_for('static', filename='out.pdf')) as fp:
+        #     msg.attach(url_for('static', filename='out.pdf'), "file/pdf", fp.read())
 
-@default.route('/')
-@default.route('/index')
-@default.to_page()
-def index():
-    body = A(
-        IMG(_src=url_for('static', filename='logo.png'), _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
-        _href=url_for('index'),
-        _title = labelize("recharger la page"),
-    )
-    return locals()
+        # mail.send(msg)
+        return locals()
 
-admin = App('admin', __name__, default)
-for c in listdir('controllers', type='file', regex=REGEX['controllers']):
-    import_module(f'controllers.{c}'.strip('.py')).admin
+    # admin = App('admin', __name__, default)
+    # for c in listdir('controllers', type='file', regex=REGEX['controllers']):
+    #     import_module(f'controllers.{c}'.strip('.py')).admin
 
-@admin.before_request
-def init_page():
-    page = admin._page()
-    page.body._class += 'is-justify-content-center'
+    # @admin.before_request
+    # def init_page():
+    #     page = admin._page()
+    #     page.body._class += 'is-justify-content-center'
 
-default.import_apps(NECESSARIES['apps'])
+    # default.import_apps(NECESSARIES['apps'])
 
-default.register_blueprint(admin)
-# print(default.url_map)
-# print(default.blueprints)
+    # default.register_blueprint(admin)
+    # print(default.url_map)
+    # print(default.blueprints)
+    return default
+

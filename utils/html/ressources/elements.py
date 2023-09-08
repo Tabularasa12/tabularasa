@@ -21,26 +21,26 @@ INIT_SIZE = 6
 
 class Buttons(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes, _base='span')
+        Tagger.__init__(self, 'DIV', *children, **attributes)
 
-    def get_color(self):
-        return self.attributes['color']
-    def set_color(self, name):
-        if name in self.AUTORIZED_COLORS:
-            for child in self.children:
-                child.color = name
-            self.attributes['color'] = name
-    def del_color(self):
-        for child in self.children:
-            del child.color
-        self.attributes['color'] = None
-    color = property(get_color, set_color, del_color)
+    # def get_color(self):
+    #     return self.attributes['color']
+    # def set_color(self, name):
+    #     if name in self.AUTORIZED_COLORS:
+    #         for child in self.children:
+    #             child.color = name
+    #         self.attributes['color'] = name
+    # def del_color(self):
+    #     for child in self.children:
+    #         del child.color
+    #     self.attributes['color'] = None
+    # color = property(get_color, set_color, del_color)
 
 class Button(Tagger):
     nbr_of_sizes = 5
     autorized_sizes = range(1, nbr_of_sizes+1)
     INIT_SIZE = nbr_of_sizes - 1
-    def __init__(self, *children, _type='a', **attributes):
+    def __init__(self, *children, _type='A', **attributes):
         if 'sizes' in attributes.keys():
             self.nbr_of_sizes = attributes['sizes']
             self.autorized_sizes = range(1, self.nbr_of_sizes+1)
@@ -178,7 +178,7 @@ class Title(Tagger):
             del attributes['size']
         else:
             self._size = self.default_size
-        Tagger.__init__(self, 'div', *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
     
     # def __get_size__(self):
     #     return self._size
@@ -195,33 +195,33 @@ class Title(Tagger):
 
 class Subtitle(Title):
     def __init__(self, *children, **attributes):
-        Title.__init__(self, *children, **attributes)
+        Title.__init__(self, 'DIV', *children, **attributes)
         self._class.replace('title', 'subtitle')
 
 class Content(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
         self._class += 'icon-text'
 
 class Block(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
 
 class Box(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
 
 class Container(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
 
 class Section(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes, _base='section')
+        Tagger.__init__(self, 'DIV', *children, **attributes, _base='section')
 
 class Level(Tagger):
     def __init__(self, *children, **attributes):
-        Tagger.__init__(self, *children, **attributes)
+        Tagger.__init__(self, 'DIV', *children, **attributes)
 
 class Notification(Tagger):
     def __init__(self, id, message, url, **attributes):
