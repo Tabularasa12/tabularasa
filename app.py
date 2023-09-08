@@ -3,9 +3,10 @@ import requests
 import secrets
 import subprocess
 from importlib import import_module
-import pdfkit
+# import pdfkit
 from flask import request, url_for, redirect, session
-from utils.apps import NECESSARIES, Master, App, db, mail
+# from utils.apps import NECESSARIES, Master, App, db, mail
+from utils.apps import NECESSARIES, Master, App
 from utils.bulma import bulma
 from utils.icons import icons
 from utils.files import *
@@ -16,8 +17,8 @@ from utils.regex import REGEX
 from utils.parameters import Parameters
 from utils.json import json, Json
 from settings import *
-from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail, Message
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_mail import Mail, Message
 
 # A essayer pour avoir plusieurs application valides l'une à côté de l'autre
 # from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -50,37 +51,37 @@ def create_app():
 
         
 
-        msg = Message("Hello",
-            sender = 'locauxmotives@gmail.com',
-            recipients=['etienne@semou.fr'],
-            body = 'ok, merci',
-            html = default.page.content.xml(),
-        )
-        options = {
-            # 'page-size': 'A4',
-            # 'dpi': 100,
-            # 'orientation' : 'Portrait',
-            # 'disable-smart-shrinking': True,
-            # 'page-height' : 300,
-            # 'page-width' : 300,
-        }
-        pdfkit.from_url('http://127.0.0.1:5000/pdf', 'static/out.pdf', options=options)
-        # with default.open_resource(url_for('static', filename='out.pdf')) as fp:
-        #     msg.attach(url_for('static', filename='out.pdf'), "file/pdf", fp.read())
+        # msg = Message("Hello",
+        #     sender = 'locauxmotives@gmail.com',
+        #     recipients=['etienne@semou.fr'],
+        #     body = 'ok, merci',
+        #     html = default.page.content.xml(),
+        # )
+        # options = {
+        #     # 'page-size': 'A4',
+        #     # 'dpi': 100,
+        #     # 'orientation' : 'Portrait',
+        #     # 'disable-smart-shrinking': True,
+        #     # 'page-height' : 300,
+        #     # 'page-width' : 300,
+        # }
+        # pdfkit.from_url('http://127.0.0.1:5000/pdf', 'static/out.pdf', options=options)
+        # # with default.open_resource(url_for('static', filename='out.pdf')) as fp:
+        # #     msg.attach(url_for('static', filename='out.pdf'), "file/pdf", fp.read())
 
-        # mail.send(msg)
+        # # mail.send(msg)
         return locals()
     
-    @default.route('/pdf')
-    @default.to_page()
-    def pdf():
-        logo = A(
-            IMG(_src=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), _alt="Logo", _style='max-width:300px;'),
-            _href=url_for('index'),
-            _title = labelize("recharger la page"),
-        )
-        body = Buttons(logo, _class='is-centered')
-        return locals()
+    # @default.route('/pdf')
+    # @default.to_page()
+    # def pdf():
+    #     logo = A(
+    #         IMG(_src=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), _alt="Logo", _style='max-width:300px;'),
+    #         _href=url_for('index'),
+    #         _title = labelize("recharger la page"),
+    #     )
+    #     body = Buttons(logo, _class='is-centered')
+    #     return locals()
 
     # admin = App('admin', __name__, default)
     # for c in listdir('controllers', type='file', regex=REGEX['controllers']):

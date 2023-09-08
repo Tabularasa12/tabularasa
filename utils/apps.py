@@ -20,11 +20,11 @@ from .files import *
 from .functions import control_path_necessaries, labelize
 from .html import *
 from .icons import icons
-from .parameters import Parameters, edict
+# from .parameters import Parameters, edict
 from .regex import REGEX
 from .url import URL
-from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
+# from flask_sqlalchemy import SQLAlchemy
+# from flask_mail import Mail
 from config import *
 
 NECESSARIES = dict(
@@ -44,9 +44,9 @@ def add_folder_route(app, name, path, download=False):
     view_func = lambda filename: send_from_directory(path, filename, as_attachment=download)
     app.add_url_rule(rule, name, view_func=view_func)
 
-mail = Mail()
-db = SQLAlchemy()
-from models.users import *
+# mail = Mail()
+# db = SQLAlchemy()
+# from models.users import *
 
 class Master(Flask):
     def __init__(self, import_name, **attributes):
@@ -59,17 +59,16 @@ class Master(Flask):
         self.title = labelize(import_name)
         run_mode = Development if RUN_MODE == 'developpement' else Production 
         self.config.from_object(run_mode())
-        mail.init_app(self)
-        db.init_app(self)
+        # mail.init_app(self)
+        # db.init_app(self)
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
 
         with self.app_context():
-            if self.config['DB_CREATE_ALL']:
-                db.create_all()
+            # if self.config['DB_CREATE_ALL']:
+            #     db.create_all()
             self.page = Page(self)
-
 
         @self.route('/update/<string:mode>', methods=["POST"])
         def update(mode):
@@ -158,18 +157,18 @@ class App(Blueprint):
         base_path = self.root_path.split(self.master.root_path)[1]
         self.static_folder = join(self.root_path, 'static')
         parameters_file = join(base_path.strip(sep()), DEFAULT_CONFIG_FILE_NAME)
-        self.page = Page(parameters_file)
+    #     self.page = Page(parameters_file)
         
-        self.page.title.update(labelize(self.name))
+    #     self.page.title.update(labelize(self.name))
 
-    controllers = Master.controllers
-    to_page = Master.to_page
+    # controllers = Master.controllers
+    # to_page = Master.to_page
 
-    def _page(self):
-        page = self.page
-        page.bulma['_href'] = url_for('css', filename=bulma.css)
-        page.icons['_href'] = url_for('icons', filename=icons.css)
-        page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p['favicon'])
-        page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p['logo'])
-        return page
+    # def _page(self):
+    #     page = self.page
+    #     page.bulma['_href'] = url_for('css', filename=bulma.css)
+    #     page.icons['_href'] = url_for('icons', filename=icons.css)
+    #     page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p['favicon'])
+    #     page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p['logo'])
+    #     return page
 
