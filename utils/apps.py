@@ -57,7 +57,8 @@ class Master(Flask):
         add_folder_route(self, 'icons', join(self.root_path, NECESSARIES['icons']), download=DEFAULT_FILE_DOWNLOAD)
         self.name = labelize(import_name)
         self.title = labelize(import_name)
-        self.config.from_object(Production())
+        run_mode = Development if RUN_MODE == 'developpement' else Production 
+        self.config.from_object(run_mode())
         mail.init_app(self)
         db.init_app(self)
 
@@ -65,7 +66,8 @@ class Master(Flask):
             pass
 
         with self.app_context():
-            db.create_all()
+            if self.config['DB_CREATE_ALL']:
+                db.create_all()
             self.page = Page(self)
 
 

@@ -26,12 +26,14 @@ class Config(object):
     )
 
 class Production(Config):
-    PREFERRED_URL_SCHEME = 'http'
+    PREFERRED_URL_SCHEME = 'https'
     SERVER_NAME = 'tabularasa.pythonanywhere.com'
     APPLICATION_ROOT = '/'
+    DB_CREATE_ALL = False
 
 class Development(Config):
     DEBUG = True
     PREFERRED_URL_SCHEME = ''
     SERVER_NAME = '127.0.0.1:5000'
     APPLICATION_ROOT = '/'
+    DB_CREATE_ALL = True
