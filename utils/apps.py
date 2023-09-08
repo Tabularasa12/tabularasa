@@ -57,7 +57,7 @@ class Master(Flask):
         add_folder_route(self, 'icons', join(self.root_path, NECESSARIES['icons']), download=DEFAULT_FILE_DOWNLOAD)
         self.name = labelize(import_name)
         self.title = labelize(import_name)
-        self.config.from_object(Development())
+        self.config.from_object(Production())
         mail.init_app(self)
         db.init_app(self)
 

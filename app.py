@@ -18,7 +18,6 @@ from utils.json import json, Json
 from settings import *
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
-from config import Development
 
 # A essayer pour avoir plusieurs application valides l'une à côté de l'autre
 # from werkzeug.middleware.dispatcher import DispatcherMiddleware
