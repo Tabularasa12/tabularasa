@@ -7,4 +7,3 @@ DEFAULT_FILE_DOWNLOAD = False
 DEFAULT_LOG_FILE = 'logs.json'
 DEFAULT_LOG_TIME_FORMAT = "%d-%m-%Y %H:%M:%S:%f"
 APPS_FOLDER_NAME = 'apps'
-RUN_MODE = 'production'

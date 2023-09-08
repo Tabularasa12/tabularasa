@@ -26,7 +26,7 @@ def clean_py_path(path):
     for _path, dirs, files in os.walk(path):
         for element in dirs+files:
             element = join(_path, element)
-            if isdir(element) and (element.endswith('__pycache__') or element.endswith('.service') or element.startswith('.vscode')):
+            if isdir(element) and (element.endswith('__pycache__') or element.endswith('.service')  or element.endswith('instance') or element.startswith('.vscode')):
                 shutil.rmtree(element)
             if isfile(element):
                 if element.endswith('.pyc') or element.startswith('.goutput'):

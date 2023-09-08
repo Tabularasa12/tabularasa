@@ -14,7 +14,6 @@ from utils.url import URL
 from utils.functions import labelize, now
 from utils.html import *
 from utils.regex import REGEX
-from utils.parameters import Parameters
 from utils.json import json, Json
 from settings import *
 # from flask_sqlalchemy import SQLAlchemy

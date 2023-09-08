@@ -8,7 +8,6 @@ from flask.cli import main
 args = sys.argv
 file = sys.argv[0]
 init_path = os.path.dirname(__file__)
-
 if os.path.basename(args[0]) == os.path.basename(__file__):
     os.chdir(init_path)
     path = os.path.join(init_path, file)
@@ -22,8 +21,8 @@ if os.path.basename(args[0]) == os.path.basename(__file__):
                     path = os.path.join(path, args[2])
                 else:
                     path = os.path.join(path, 'apps', args[2])
-            print(path)
             clean_py_path(path)
+            print(f'le dossier {path} à été nettoyé')
         if args[1] == 'debug':
             sys.argv = [path, "run", '--debug']
     if 'run' in sys.argv:
