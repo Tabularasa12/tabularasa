@@ -56,7 +56,7 @@ def create_app():
             body = 'ok, merci',
             html = default.page.content.xml(),
         )
-        pdfkit.from_url('https://tabularasa.pythonanywhere.com/index', 'static/out.pdf')
+        # pdfkit.from_url('https://tabularasa.pythonanywhere.com/index', 'static/out.pdf')
         # with default.open_resource(url_for('static', filename='out.pdf')) as fp:
         #     msg.attach(url_for('static', filename='out.pdf'), "file/pdf", fp.read())
 
