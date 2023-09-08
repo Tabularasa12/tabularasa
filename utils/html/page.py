@@ -33,7 +33,7 @@ class Page(Tagger):
                 META(_name="name", _id='name', _content=app.name),
                 META(_name="autor", _id='autor', _content=header['autor']),
                 META(_name="description", _id='description', _content=header['description']),
-                # META(_name="viewport", _id='viewport', _content=header['viewport']),
+                META(_name="viewport", _id='viewport', _content=header['viewport']),
                 META(_charset=header['charset'], _id='charset'),
                 META(_name="pdfkit-page-size", _id='pdfkit-page-size', _content="A4"),
                 META(_name="pdfkit-orientation", _id='pdfkit-orientation', _content="Portrait"),

@@ -3,7 +3,6 @@ from secrets import token_hex as secret_key
 __all__ = ['Production', 'Development']
 
 class Config(object):
-    DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///default.sqlite3'
     SECRET_KEY = secret_key()
@@ -32,7 +31,6 @@ class Production(Config):
     DB_CREATE_ALL = False
 
 class Development(Config):
-    DEBUG = True
     PREFERRED_URL_SCHEME = ''
     SERVER_NAME = '127.0.0.1:5000'
     APPLICATION_ROOT = '/'

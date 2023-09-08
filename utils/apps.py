@@ -57,7 +57,7 @@ class Master(Flask):
         add_folder_route(self, 'icons', join(self.root_path, NECESSARIES['icons']), download=DEFAULT_FILE_DOWNLOAD)
         self.name = labelize(import_name)
         self.title = labelize(import_name)
-        run_mode = Development if RUN_MODE == 'developpement' else Production 
+        run_mode = Development if self.config['DEBUG'] else Production 
         self.config.from_object(run_mode())
         # mail.init_app(self)
         # db.init_app(self)
