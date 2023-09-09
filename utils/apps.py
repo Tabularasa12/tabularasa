@@ -66,8 +66,8 @@ class Master(Flask):
             pass
 
         with self.app_context():
-            # if self.config['DB_CREATE_ALL']:
-            #     db.create_all()
+            if self.config['DB_CREATE_ALL']:
+                db.create_all()
             self.page = Page(self)
 
         @self.route('/update', methods=['POST'])
