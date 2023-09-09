@@ -74,7 +74,7 @@ class Master(Flask):
         def update():
             if request.method == 'POST':
                 data = json.loads(request.data)
-                print(data)
+                # print(data)
                 repo = git.Repo(join(self.root_path, '.git'))
                 origin = repo.remotes.origin
                 origin.pull()
