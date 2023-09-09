@@ -71,7 +71,7 @@ class Master(Flask):
             self.page = Page(self)
 
         @self.route('/update', methods=['POST'])
-        def webhook():
+        def update():
             if request.method == 'POST':
                 data = json.loads(request.data)
                 print(data)
