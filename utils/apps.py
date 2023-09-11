@@ -85,12 +85,14 @@ class Master(Flask):
                         raise ValueError("x-hub-signature-256 header is missing!")
                     hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
                     expected_signature = "sha256=" + hash_object.hexdigest()
+
+                    print(secret_token)
+                    print(expected_signature)
                     if not hmac.compare_digest(expected_signature, signature_header):
                         raise ValueError("Request signatures didn't match!")
                 
                 secret_key = os.environ.get('GIT_TOKEN')
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
-                    print('ok')
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
