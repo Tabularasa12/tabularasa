@@ -6,8 +6,6 @@ import hashlib
 import hmac
 import os
 
-#essai3
-
 from flask import (
     Blueprint,
     Flask,
