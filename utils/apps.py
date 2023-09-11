@@ -82,7 +82,7 @@ class Master(Flask):
                 def verify_signature():
                     from os import environ
                     secret_key = environ.get('GIT_TOKEN')
-                    signature = "sha256="+hmac.new(bytes(secret_key, 'utf-8'), msg = request.data, digestmod = hashlib.sha256).hexdigest().lower()
+                    signature = "sha256="+hmac.new(secret_key, msg = request.data, digestmod = hashlib.sha256).hexdigest().lower()
                     return hmac.compare_digest(signature, request.headers['X-Hub-Signature-256'])
                 if verify_signature():
                     repo = git.Repo(join(self.root_path, '.git'))
