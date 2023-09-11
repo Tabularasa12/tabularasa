@@ -74,10 +74,10 @@ class Master(Flask):
         def update():
             if request.method == 'POST':
                 print(request.data, request.files, request.headers)
-                data = json.loads(request.data)
-                repo = git.Repo(join(self.root_path, '.git'))
-                origin = repo.remotes.origin
-                origin.pull()
+                # data = json.loads(request.data)
+                # repo = git.Repo(join(self.root_path, '.git'))
+                # origin = repo.remotes.origin
+                # origin.pull()
                 return 'Updated PythonAnywhere successfully', 200
             else:
                 return 'Wrong event type', 400
