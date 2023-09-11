@@ -93,7 +93,7 @@ class Master(Flask):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
-                    return 'Updated PythonAnywhere successfully', 200
+                    return dict()
                 else:
                     return "Request signatures didn't match!", 403
             else:
