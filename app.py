@@ -6,7 +6,7 @@ from importlib import import_module
 # import pdfkit
 from flask import request, url_for, redirect, session
 # from utils.apps import NECESSARIES, Master, App, db, mail
-from utils.apps import NECESSARIES, Master, App
+from utils.apps import NECESSARIES, Master, App, db
 from utils.bulma import bulma
 from utils.icons import icons
 from utils.files import *
@@ -16,6 +16,8 @@ from utils.html import *
 from utils.regex import REGEX
 from utils.json import json, Json
 from settings import *
+from models import *
+import datetime
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_mail import Mail, Message
 
@@ -47,6 +49,11 @@ def create_app():
         # apps = [Button(app.name, _href=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
         # body = [Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered')]
         body = Buttons(logo, _class='is-centered')
+        users = Users.query.all()
+        users_buttons = []
+        for user in users:
+            users_buttons.append(Button(user.email, user.role))
+        foot = Buttons(*users_buttons, _class='is-centered')
 
         
 
@@ -96,5 +103,12 @@ def create_app():
     # default.register_blueprint(admin)
     # print(default.url_map)
     # print(default.blueprints)
-    return default
 
+
+    @default.route('/create_user/<string:email>/<string:password>', methods=['GET', 'POST'])
+    def create_user(email, password):
+        db.session.add(Users(email=email, password=password, active=True, confirmed_at=datetime.datetime.now(), role='utilisateur'))
+        db.session.commit()
+        return redirect(url_for('index'))
+
+    return default

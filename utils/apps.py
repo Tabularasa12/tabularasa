@@ -5,6 +5,7 @@ import git
 import hashlib
 import hmac
 import os
+import datetime
 
 from flask import (
     Blueprint,
@@ -22,7 +23,7 @@ from settings import *
 
 from .bulma import bulma
 from .files import *
-from .functions import control_path_necessaries, labelize
+from .functions import control_path_necessaries, labelize, now
 from .html import *
 from .icons import icons
 # from .parameters import Parameters, edict
@@ -51,7 +52,7 @@ def add_folder_route(app, name, path, download=False):
 
 # mail = Mail()
 db = SQLAlchemy()
-from models.users import *
+from models import *
 
 class Master(Flask):
     def __init__(self, import_name, **attributes):
@@ -73,6 +74,12 @@ class Master(Flask):
         with self.app_context():
             if self.config['DB_CREATE_ALL']:
                 db.create_all()
+                if not Roles.query.all():
+                    db.session.add(Roles(name='administrateur'))
+                    db.session.add(Roles(name='utilisateur'))
+                if not Users.query.all():
+                    db.session.add(Users(email='email', password='password', active=True, confirmed_at=datetime.datetime.now(), role='administrateur'))
+                db.session.commit()
             self.page = Page(self)
 
         @self.route('/update', methods=['POST'])
