@@ -89,7 +89,7 @@ class Master(Flask):
                         raise HTTPException(status_code=403, detail="Request signatures didn't match!")
                 
                 secret_key = os.getenv('GIT_TOKEN')
-                print(os.getenv('GIT_TOKEN'))
+                print(secret_key)
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
