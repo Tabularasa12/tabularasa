@@ -43,7 +43,7 @@ def create_app():
             _title = labelize("recharger la page"),
         )
 
-        # default.page.color = 'transparent'
+        default.page.color = 'transparent'
         # apps = [Button(app.name, _href=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
         # body = [Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered')]
         body = Buttons(logo, _class='is-centered')
