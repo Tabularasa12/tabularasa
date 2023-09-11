@@ -86,8 +86,10 @@ class Master(Flask):
                     mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
                     return hmac.compare_digest(mac.hexdigest(), github_signature)
 
-                secret_key = os.environ.get('GIT_TOKEN')
-                if verify_signature(request.headers['X-Hub-Signature-256'], request.data, secret_key):
+                key = os.environ.get('GIT_TOKEN')
+                data = request.data
+                signature = request.headers['X-Hub-Signature-256']
+                if verify_signature(signature, data, key):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
