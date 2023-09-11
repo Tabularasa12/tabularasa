@@ -91,8 +91,17 @@ class Master(Flask):
                     if not hmac.compare_digest(expected_signature, signature_header):
                         raise ValueError("Request signatures didn't match!")
                 
+                def is_valid_signature(x_hub_signature, data, private_key):
+                    # x_hub_signature and data are from the webhook payload
+                    # private key is your webhook secret
+                    hash_algorithm, github_signature = x_hub_signature.split('=', 1)
+                    algorithm = hashlib.__dict__.get(hash_algorithm)
+                    encoded_key = bytes(private_key, 'latin-1')
+                    mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
+                    return hmac.compare_digest(mac.hexdigest(), github_signature)
+
                 secret_key = os.environ.get('GIT_TOKEN')
-                if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
+                if is_valid_signature(request.headers['X-Hub-Signature-256'], request.data, secret_key):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
