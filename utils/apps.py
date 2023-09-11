@@ -79,12 +79,17 @@ class Master(Flask):
         @self.route('/update', methods=['POST'])
         def update():
             if request.method == 'POST':
-                def verify_signature():
-                    from os import environ
-                    secret_key = environ.get('GIT_TOKEN')
-                    signature = "sha256="+hmac.new(secret_key, msg = request.data, digestmod = hashlib.sha256).hexdigest().lower()
-                    return hmac.compare_digest(signature, request.headers['X-Hub-Signature-256'])
-                if verify_signature():
+                def verify_signature(payload_body, secret_token, signature_header):
+                    if not signature_header:
+                        raise HTTPException(status_code=403, detail="x-hub-signature-256 header is missing!")
+                    hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
+                    expected_signature = "sha256=" + hash_object.hexdigest()
+                    if not hmac.compare_digest(expected_signature, signature_header):
+                        raise HTTPException(status_code=403, detail="Request signatures didn't match!")
+                
+                from os import environ
+                secret_key = environ.get('GIT_TOKEN')
+                if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
