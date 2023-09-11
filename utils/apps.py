@@ -82,11 +82,11 @@ class Master(Flask):
             if request.method == 'POST':
                 def verify_signature(payload_body, secret_token, signature_header):
                     if not signature_header:
-                        return "x-hub-signature-256 header is missing!", 403
+                        raise ValueError("x-hub-signature-256 header is missing!")
                     hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
                     expected_signature = "sha256=" + hash_object.hexdigest()
                     if not hmac.compare_digest(expected_signature, signature_header):
-                        return "Request signatures didn't match!", 403
+                        raise ValueError("Request signatures didn't match!")
                 
                 secret_key = os.environ.get('GIT_TOKEN')
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
@@ -95,9 +95,9 @@ class Master(Flask):
                     origin.pull()
                     return dict()
                 else:
-                    return "Request signatures didn't match!", 403
+                    raise ValueError("Request signatures didn't match!")
             else:
-                return "Wrong event type", 400
+                raise ValueError("Wrong event type")
 
     def to_page(self, template=DEFAUT_TEMPLATE):
         def decorator(f):
