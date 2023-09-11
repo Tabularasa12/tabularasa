@@ -28,7 +28,7 @@ from .icons import icons
 # from .parameters import Parameters, edict
 from .regex import REGEX
 from .url import URL
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 # from flask_mail import Mail
 from config import *
 
@@ -50,7 +50,7 @@ def add_folder_route(app, name, path, download=False):
     app.add_url_rule(rule, name, view_func=view_func)
 
 # mail = Mail()
-# db = SQLAlchemy()
+db = SQLAlchemy()
 # from models.users import *
 
 class Master(Flask):
@@ -65,14 +65,14 @@ class Master(Flask):
         run_mode = Development if self.config['DEBUG'] else Production 
         self.config.from_object(run_mode())
         # mail.init_app(self)
-        # db.init_app(self)
+        db.init_app(self)
 
         if control_path_necessaries(self.root_path, NECESSARIES):
             pass
 
         with self.app_context():
-            # if self.config['DB_CREATE_ALL']:
-            #     db.create_all()
+            if self.config['DB_CREATE_ALL']:
+                db.create_all()
             self.page = Page(self)
 
         @self.route('/update', methods=['POST'])
