@@ -1,6 +1,7 @@
 from functools import wraps
 from importlib import import_module
 import json
+import git
 
 from flask import (
     Blueprint,
@@ -67,15 +68,16 @@ class Master(Flask):
             pass
 
         with self.app_context():
-            if self.config['DB_CREATE_ALL']:
-                db.create_all()
+            # if self.config['DB_CREATE_ALL']:
+            #     db.create_all()
             self.page = Page(self)
 
         @self.route('/update', methods=['POST'])
         def update():
             if request.method == 'POST':
-                print(request.data, request.files, request.headers)
+                # print(request.data, request.files, request.headers)
                 data = json.loads(request.data)
+                print(data)
                 repo = git.Repo(join(self.root_path, '.git'))
                 origin = repo.remotes.origin
                 origin.pull()
