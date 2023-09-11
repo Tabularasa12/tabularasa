@@ -90,6 +90,7 @@ class Master(Flask):
                 
                 secret_key = os.environ.get('GIT_TOKEN')
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
+                    print('ok')
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
