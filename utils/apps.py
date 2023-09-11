@@ -87,8 +87,9 @@ class Master(Flask):
                     if not hmac.compare_digest(expected_signature, signature_header):
                         raise HTTPException(status_code=403, detail="Request signatures didn't match!")
                 
-                from os import environ
-                secret_key = environ.get('GIT_TOKEN')
+                import os
+                secret_key = os.environ['GIT_TOKEN']
+                print(secret_key)
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
