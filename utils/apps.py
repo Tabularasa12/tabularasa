@@ -4,6 +4,7 @@ import json
 import git
 import hashlib
 import hmac
+import os
 
 #essai1
 
@@ -87,7 +88,6 @@ class Master(Flask):
                     if not hmac.compare_digest(expected_signature, signature_header):
                         raise HTTPException(status_code=403, detail="Request signatures didn't match!")
                 
-                import os
                 secret_key = os.environ['GIT_TOKEN']
                 print(secret_key)
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
