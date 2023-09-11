@@ -6,7 +6,7 @@ import hashlib
 import hmac
 import os
 
-#essai1
+#essai
 
 from flask import (
     Blueprint,
@@ -88,8 +88,8 @@ class Master(Flask):
                     if not hmac.compare_digest(expected_signature, signature_header):
                         raise HTTPException(status_code=403, detail="Request signatures didn't match!")
                 
-                secret_key = os.environ.get('GIT_TOKEN')
-                print(secret_key)
+                secret_key = os.getenv('GIT_TOKEN')
+                print(os.getenv('GIT_TOKEN'))
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
