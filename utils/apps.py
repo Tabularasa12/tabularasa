@@ -51,7 +51,7 @@ def add_folder_route(app, name, path, download=False):
 
 # mail = Mail()
 db = SQLAlchemy()
-# from models.users import *
+from models.users import *
 
 class Master(Flask):
     def __init__(self, import_name, **attributes):
