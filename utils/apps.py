@@ -82,11 +82,11 @@ class Master(Flask):
             if request.method == 'POST':
                 def verify_signature(payload_body, secret_token, signature_header):
                     if not signature_header:
-                        raise HTTPException(status_code=403, detail="x-hub-signature-256 header is missing!")
+                        return "x-hub-signature-256 header is missing!", 403
                     hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
                     expected_signature = "sha256=" + hash_object.hexdigest()
                     if not hmac.compare_digest(expected_signature, signature_header):
-                        raise HTTPException(status_code=403, detail="Request signatures didn't match!")
+                        return "Request signatures didn't match!", 403
                 
                 secret_key = os.environ.get('GIT_TOKEN')
                 print(secret_key)
@@ -95,10 +95,8 @@ class Master(Flask):
                     origin = repo.remotes.origin
                     origin.pull()
                     return 'Updated PythonAnywhere successfully', 200
-                else:
-                    raise HTTPException(status_code=403, detail="Request signatures didn't match!")
             else:
-                raise HTTPException(status_code=400, detail="Wrong event type")
+                return "Wrong event type", 400
 
     def to_page(self, template=DEFAUT_TEMPLATE):
         def decorator(f):
