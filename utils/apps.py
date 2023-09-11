@@ -6,7 +6,7 @@ import hashlib
 import hmac
 import os
 
-#essai3
+#essai2
 
 from flask import (
     Blueprint,
