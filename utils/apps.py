@@ -78,20 +78,8 @@ class Master(Flask):
         @self.route('/update', methods=['POST'])
         def update():
             if request.method == 'POST':
-                def verify_signature(payload_body, secret_token, signature_header):
-                    if not signature_header:
-                        raise ValueError("x-hub-signature-256 header is missing!")
-                    hash_object = hmac.new(secret_token.encode('utf-8'), msg=payload_body, digestmod=hashlib.sha256)
-                    expected_signature = "sha256=" + hash_object.hexdigest()
-
-                    print(secret_token)
-                    print(expected_signature)
-                    if not hmac.compare_digest(expected_signature, signature_header):
-                        raise ValueError("Request signatures didn't match!")
                 
-                def is_valid_signature(x_hub_signature, data, private_key):
-                    # x_hub_signature and data are from the webhook payload
-                    # private key is your webhook secret
+                def verify_signature(x_hub_signature, data, private_key):
                     hash_algorithm, github_signature = x_hub_signature.split('=', 1)
                     algorithm = hashlib.__dict__.get(hash_algorithm)
                     encoded_key = bytes(private_key, 'latin-1')
@@ -99,7 +87,7 @@ class Master(Flask):
                     return hmac.compare_digest(mac.hexdigest(), github_signature)
 
                 secret_key = os.environ.get('GIT_TOKEN')
-                if is_valid_signature(request.headers['X-Hub-Signature-256'], request.data, secret_key):
+                if verify_signature(request.headers['X-Hub-Signature-256'], request.data, secret_key):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()

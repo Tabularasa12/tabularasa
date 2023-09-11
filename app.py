@@ -40,7 +40,7 @@ def create_app():
         logo = A(
             IMG(_src=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), _alt="Logo", _style='max-width:300px;'),
             _href=url_for('index'),
-            _title = labelize("recharger"),
+            _title = labelize("recharger la page"),
         )
 
         # default.page.color = 'transparent'
