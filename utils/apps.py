@@ -90,55 +90,6 @@ class Master(Flask):
             else:
                 raise HTTPException(status_code=400, detail="Wrong event type")
 
-            def verify_signature(payload_body, secret_token, signature_header):
-                from os import environ
-                secret_key = environ.get('GIT_TOKEN')
-                signature = "sha256="+hmac.new(bytes(secret_key, 'utf-8'), msg = request.data, digestmod = hashlib.sha256).hexdigest().lower()
-                return hmac.compare_digest(signature, request.headers['X-Hub-Signature-256'])
-
-        # @self.route('/update/<string:mode>', methods=["POST"])
-        # def update(mode):
-        #     update_log_file = 'update_log.txt'
-        #     mode = True if mode == 'true' or mode == 'True' else False
-        #     log_path = f'./{DEFAULT_LOG_FILE}'
-        #     host = 'pythonanywhere.com'
-        #     username = 'Tabularasa'
-        #     app_name = 'tabularasa'
-        #     http_host = f'www.{host}'
-        #     request_host = f'{app_name}.{host}'
-        #     domaine_name = f'{username}.{host}'
-        #     token = '3f676d3102f7aada05843a6f0f04f4c49bb54a05'
-        #     message =''
-        #     if not isfile(log_path):
-        #         write(log_path, f"{now()}-> Début du log pour {request_host}")
-        #         write(log_path, f"{now()}-> --------------------------------------------", 'a')
-        #         write(log_path, f"{now()}-> Tentative de mise à jour de {request_host}", 'a')
-        #     if mode:
-        #         write(log_path, f"{now()}-> Début de mise à jour de {request_host}", 'a')
-        #         if request.host == request_host:
-        #             write(log_path, f"{now()}-> Récupération des modifications sur le dépot Github de {request_host}", 'a')
-        #             response = subprocess.call(["git", "pull"])
-        #             if not response:
-        #                 write(log_path, f"{now()}-> Récupération des modifications effectuée", 'a')
-        #             else:
-        #                 write(log_path, f"{now()}-> Impossible de récupérer les modifications", 'a')
-
-        #             # import requests
-
-        #             # command = f'https://{http_host}/api/v0/user/{username}/webapps/{domaine_name}/reload/'
-        #             # response = requests.post(
-        #             #     command,
-        #             #     headers={'Authorization': 'Token {token}'.format(token=token)}
-        #             # )
-        #             # if response.status_code == 200:
-        #             #     json[now()] = 'CPU quota info:'
-        #             #     json[now()] = response.content
-        #             # else:
-        #             #     json[now()] = 'Got unexpected status code {}: {!r}'.format(response.status_code, response.content)
-        #     else:
-        #         write(log_path, f"{now()}-> Mise à jour désactivée", 'a')
-        #         return dict()
-
     def to_page(self, template=DEFAUT_TEMPLATE):
         def decorator(f):
             @wraps(f)
