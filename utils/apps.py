@@ -89,12 +89,13 @@ class Master(Flask):
                         return "Request signatures didn't match!", 403
                 
                 secret_key = os.environ.get('GIT_TOKEN')
-                print(secret_key)
                 if verify_signature(request.data, secret_key, request.headers['X-Hub-Signature-256']):
                     repo = git.Repo(join(self.root_path, '.git'))
                     origin = repo.remotes.origin
                     origin.pull()
                     return 'Updated PythonAnywhere successfully', 200
+                else:
+                    return "Request signatures didn't match!", 403
             else:
                 return "Wrong event type", 400
 
