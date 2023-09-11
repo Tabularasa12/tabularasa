@@ -2,6 +2,7 @@ from functools import wraps
 from importlib import import_module
 import json
 import git
+print(git)
 
 from flask import (
     Blueprint,
