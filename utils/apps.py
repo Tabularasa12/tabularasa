@@ -73,6 +73,7 @@ class Master(Flask):
         @self.route('/update', methods=['POST'])
         def update():
             if request.method == 'POST':
+                print(request.data, request.files, request.headers)
                 data = json.loads(request.data)
                 repo = git.Repo(join(self.root_path, '.git'))
                 origin = repo.remotes.origin
