@@ -5,6 +5,7 @@ from utils.icons import icons
 from utils.json import Json
 from settings import *
 from utils.config import ConfigFile
+from utils.functions import labelize
 
 from .ressources import *
 from settings import DEFAULT_LOGO_FILE_NAME
@@ -91,15 +92,12 @@ class Apppage(Page):
         @app.before_request
         def navbar_init():
             navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text="Retour à la page d'accueil"), url=url_for('index'))
-        
-        # navbar.burger.text_color = 'white'
-        
-        # start = []
-        # for c in app.controllers:
-        #     c_name = c.rsplit('.', 1)[1]
-        #     if c_name != 'index':
-        #         start.append(Navitem(labelize(c_name), _href=url_for(f'{app.name}.{c_name}')))
-        # navbar.start.update(*start)
+            start = []
+            for c in app.controllers:
+                c_name = c.rsplit('.', 1)[1]
+                if c_name != 'index':
+                    start.append(Navitem(labelize(c_name), url=url_for(f'{app.name}.{c_name}')))
+            navbar.start.update(*start)
 
         # admin = default.blueprints['admin']
         # end = Navitem(Icon('cog', color='white'), _href=url_for(f'{admin.name}.index'))

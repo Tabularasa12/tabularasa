@@ -146,7 +146,10 @@ AUTORIZED_COLORS = [
     'transparent',
 ]
 
+NBR_OF_SIZE = 7
+
 class Tagger(TAGGER):
+    AUTORIZED_SIZES = range(1, (NBR_OF_SIZE+1))
     def __init__(self,
             name,
             *children,
@@ -191,7 +194,11 @@ class Tagger(TAGGER):
 
     def update(self, *children, **attributes):
         self.children = [*children] if children else copy(self.children)
-        self.attributes.update(**attributes)
+        for key, value in attributes.items():
+            if key.startswith('_'):
+                self.attributes[key] = value
+            else:
+                exec(f'self.{key}="{value}"')
 
     def get_class(self): return self['_class']
     def set_class(self, value): self['_class'] = Class(value)
@@ -239,14 +246,13 @@ class Tagger(TAGGER):
         self._class -= f'has-text-{self.__get_text_color__()}'
     text_color = property(__get_text_color__, __set_text_color__, __del_text_color__)
 
-    AUTORIZED_SIZE = [1,2,3,4,5,6,7,8,9]
     def __get_size__(self):
-        for size in self.AUTORIZED_SIZE:
+        for size in self.AUTORIZED_SIZES:
             if f'is-size-{size}' in self._class.list:
                 return size
         return None
     def __set_size__(self, name):
-        if name in self.AUTORIZED_SIZE:
+        if name in self.AUTORIZED_SIZES:
             self._class.replace(f'is-size-{self.__get_size__()}', f'is-size-{name}')
     def __del_size__(self):
         self._class -= f'is-size-{self.__get_size__()}'

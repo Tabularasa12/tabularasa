@@ -16,21 +16,12 @@ class Burger(Button):
         attributes["aria-label"] = "menu"
         attributes["aria-expanded"] = "false"
         Button.__init__(self, *children, **attributes)
+        self._class -= self.__class__.__name__.lower()
 
 class Navitem(Button):
     def __init__(self, *children, **attributes):
         Button.__init__(self, *children, **attributes)
-        self._class.replace('navitem', 'navbar-item icon-text')
-    #     self.title = attributes['title'] if 'title' in attributes.keys() else None
-    #     self.url = attributes['url'] if 'url' in attributes.keys() else '/'
-
-    # def get_title(self):
-    #     return self.attributes['_title']
-    # def set_title(self, name):
-    #     self.attributes['_title'] = name
-    # def del_title(self):
-    #     self.attributes['_title'] = None
-    # title = property(get_title, set_title, del_title)
+        self._class.replace(self.__class__.__name__.lower(), 'navbar-item icon-text')
 
     def activate(self):
         self._class += 'is-active'

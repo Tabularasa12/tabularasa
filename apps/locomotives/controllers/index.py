@@ -8,7 +8,7 @@ from utils.functions import labelize
 @app.to_page()
 def index():
     body = A(
-        IMG(_src=app.page.logo['_href'], _alt="Logo", _style='margin-left:auto;margin-right:auto;max-width:300px;'),
+        Image(url=app.page.logo['_href'], replace="Logo", size=100),
         _href=url_for('index'),
         _title = labelize("recharger la page"),
     )

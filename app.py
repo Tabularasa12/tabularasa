@@ -45,16 +45,15 @@ default.page._style += "background-image: linear-gradient(to right top, yellow, 
 @default.route('/index')
 @default.to_page()
 def index():
-    head = Buttons(Button(Icon('cog'), _href=url_for('admin.index'), color='primary', _class='is-outlined', _style='border:None'), _class='is-right')
+    head = Buttons(Button(Icon('cog'), url=url_for('admin.index'), color='primary', _class='is-outlined', _style='border:None'), _class='is-right')
     logo = A(
-        IMG(_src=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), _alt="Logo", _style='max-width:300px;'),
+        Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), replace="Logo", size=300, text=labelize("recharger la page")),
         _href=url_for('index'),
-        _title = labelize("recharger la page"),
     )
 
-    apps = [Button(app.name, _href=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
+    apps = [Button(labelize(app.name), url=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
     body = [Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered')]
-    
+
     return locals()
 
 

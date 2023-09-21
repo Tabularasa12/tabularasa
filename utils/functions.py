@@ -10,7 +10,6 @@ from flask import Blueprint, Flask, render_template, Markup, send_from_directory
 from settings import DEFAUT_TEMPLATE, DEFAULT_LOG_TIME_FORMAT
 from utils.files import *
 from utils.regex import REGEX
-from utils.html.ressources.taggers import Tagger
 
 def labelize(text=""):
     text=str(text)

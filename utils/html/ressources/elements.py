@@ -23,23 +23,26 @@ class Buttons(Tagger):
         Tagger.__init__(self, 'DIV', *children, **attributes)
 
 class Button(Tagger):
-    nbr_of_sizes = 5
-    autorized_sizes = range(1, nbr_of_sizes+1)
-    INIT_SIZE = nbr_of_sizes - 1
     def __init__(self, *children, _type='A', **attributes):
-        if 'sizes' in attributes.keys():
-            self.nbr_of_sizes = attributes['sizes']
-            self.autorized_sizes = range(1, self.nbr_of_sizes+1)
-            self.INIT_SIZE = self.nbr_of_sizes - 1
         Tagger.__init__(self, _type, *children, **attributes)
-    
-    def get_url(self):
+        self.url = attributes['url'] if 'url' in attributes.keys() else ''
+        self.title = attributes['title'] if 'title' in attributes.keys() else None
+
+    def __get_url__(self):
         return self.attributes['_href']
-    def set_url(self, name):
+    def __set_url__(self, name):
         self.attributes['_href'] = name
-    def del_url(self):
+    def __del_url__(self):
         self.attributes['_href'] = '#'
-    url = property(get_url, set_url, del_url)
+    url = property(__get_url__, __set_url__, __del_url__)
+
+    def __get_text__(self):
+        return self.attributes['_title']
+    def __set_text__(self, value): 
+        self.attributes['_title'] = value
+    def __del_text__(self):
+        self.attributes['_title'] = ''
+    text = property(__get_text__, __set_text__, __del_text__)
 
 class Text(Tagger):
     autorized_formats = ['capitalized', 'lowercase', 'uppercase', 'italic', 'bold']
@@ -106,14 +109,13 @@ class Icon(Tagger):
     size = property(get_size, set_size, del_size)
 
 class Image(Tagger):
-    size_correspondances = [50,40,32,24,19,15,12]
-    all_sizes = size_correspondances + [16, 24, 32, 48, 64, 96, 128, 196, 256, 384, 512, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
+    AUTORIZED_IMAGE_SIZES = [16, 24, 32, 48, 64, 96, 128, 196, 256, 384, 512, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
     def __init__(self, **attributes):
         image = IMG(
             _src = attributes['url'] if 'url' in attributes.keys() else '#',
             _title = attributes['text'] if 'text' in attributes.keys() else '',
             _alt = attributes['replace'] if 'replace' in attributes.keys() else '',
-            _id='image'
+            _id='image',
         )
         Tagger.__init__(self, 'SPAN', image, **attributes)
 
@@ -125,7 +127,7 @@ class Image(Tagger):
         self.image['_src'] = '#'
     url = property(__get_url__, __set_url__, __del_url__)
 
-    def __get_text__(self): 
+    def __get_text__(self):
         return self.image['_title']
     def __set_text__(self, value): 
         self.image['_title'] = value
@@ -141,41 +143,36 @@ class Image(Tagger):
         self.image['_alt'] = ''
     replace = property(__get_replace__, __set_replace__, __del_replace__)
 
-    # @property
-    # def get_size_class_num(self):
-    #     for size in self.all_sizes:
-    #         if f'is-{size}x{size}' in self._class.list:
-    #             return size
-    #     return None
-
-    # def __get_size__(self):
-    #     class_num = self.get_size_class_num
-    #     if class_num:
-    #         if class_num in self.size_correspondances:
-    #             for num, size in enumerate(self.size_correspondances):
-    #                 if size == class_num:
-    #                     return num
-    #         else:
-    #             return class_num
-    #     return None
-    # def __set_size__(self, value):
-    #     if isinstance(value, int):
-    #         hold_size_class = self.get_size_class_num
-    #         new_size_class = None
-    #         if value in range(1,8):
-    #             new_size_class = self.size_correspondances[value-1]
-    #         elif value in self.all_sizes:
-    #             new_size_class = value
-    #         if new_size_class:
-    #             new_size_class = f'is-{new_size_class}x{new_size_class}'
-    #             if hold_size_class:
-    #                 hold_size_class = f'is-{hold_size_class}x{hold_size_class}'
-    #                 self._class.replace(hold_size_class, new_size_class)
-    #             else:
-    #                 self._class += new_size_class
-    # def __del_size__(self):
-    #     self._class -= f'is-{self.get_size_class_num}x{self.get_size_class_num}'
-    # size = property(__get_size__, __set_size__, __del_size__)
+    def __get_size__(self):
+        for size in self.AUTORIZED_IMAGE_SIZES:
+            if f'is-{size}x{size}' in self._class.list:
+                return size
+        for size in self.AUTORIZED_SIZES:
+            if f'is-size-{size}' in self._class.list:
+                return size
+        return None
+    def __set_size__(self, value):
+        hold_size = self.__get_size__()
+        hold_size_class = None
+        if hold_size:
+            if hold_size in self.AUTORIZED_IMAGE_SIZES:
+                hold_size_class = f'is-{hold_size}x{hold_size}'
+            else:
+                hold_size_class = f'is-size-{hold_size}'
+        new_size_class = None
+        if value in self.AUTORIZED_IMAGE_SIZES:
+            new_size_class = f'is-{value}x{value}'
+        elif value in self.AUTORIZED_SIZES:
+            new_size_class = f'is-size-{value}'
+        if new_size_class:
+            self._class.replace(hold_size_class, new_size_class)
+    def __del_size__(self):
+        hold_size = self.__get_size__()
+        if hold_size in self.AUTORIZED_IMAGE_SIZES:
+            self._class -= f'is-{hold_size}x{hold_size}'
+        elif hold_size in self.AUTORIZED_SIZES:
+            self._class -= f'is-size-{hold_size}'
+    size = property(__get_size__, __set_size__, __del_size__)
 
     def __get_color__(self):
         return self.image.back_color
@@ -190,7 +187,6 @@ class Icon_image(Tagger):
     def __init__(self, **attributes):
         Tagger.__init__(self, 'SPAN', IMG(_src=attributes['url'], _id='image'), **attributes)
         self._class.replace(self.__class__.__name__.lower(), 'icon')
-        self.icon = self.image    
 
     def get_size(self):
         return self.image.size
@@ -288,14 +284,14 @@ class Notification(Tagger):
     def is_active(self):
         return False if 'is-hidden' in self._class.list else True
     
-    def get_url(self):
+    def __get_url__(self):
         return self.button.url
-    def set_url(self, url):
+    def __set_url__(self, url):
         url.vars['del_flash'] = self.id
         self.button.url = url
-    def del_url(self):
+    def __del_url__(self):
         self.button.url = '#'
-    url = property(get_url, set_url, del_url)
+    url = property(__get_url__, __set_url__, __del_url__)
 
     def get_message(self):
         return self.children[1]
