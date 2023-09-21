@@ -5461,18 +5461,33 @@ div.icon-text {
     padding-top: 200%; }
   .image.is-1by3 {
     padding-top: 300%; }
+  .image.is-12x12 {
+    height: 12px;
+    width: 12px; }
+  .image.is-15x15 {
+    height: 15px;
+    width: 15px; }
   .image.is-16x16 {
     height: 16px;
     width: 16px; }
+  .image.is-19x19 {
+    height: 19px;
+    width: 19px; }
   .image.is-24x24 {
     height: 24px;
     width: 24px; }
   .image.is-32x32 {
     height: 32px;
     width: 32px; }
+  .image.is-40x40 {
+    height: 40px;
+    width: 40px; }
   .image.is-48x48 {
     height: 48px;
     width: 48px; }
+  .image.is-50x50 {
+    height: 50px;
+    width: 50px; }
   .image.is-64x64 {
     height: 64px;
     width: 64px; }
@@ -5482,6 +5497,60 @@ div.icon-text {
   .image.is-128x128 {
     height: 128px;
     width: 128px; }
+  .image.is-196x196 {
+    height: 196px;
+    width: 196px; }
+  .image.is-256x256 {
+    height: 256px;
+    width: 256px; }
+  .image.is-384x384 {
+    height: 384px;
+    width: 384px; }
+  .image.is-512x512 {
+    height: 512px;
+    width: 512px; }
+  .image.is-50x50 {
+    height: 50px;
+    width: 50px; }
+  .image.is-100x100 {
+    height: 100px;
+    width: 100px; }
+  .image.is-150x150 {
+    height: 150px;
+    width: 150px; }
+  .image.is-200x200 {
+    height: 200px;
+    width: 200px; }
+  .image.is-250x250 {
+    height: 250px;
+    width: 250px; }
+  .image.is-300x300 {
+    height: 300px;
+    width: 300px; }
+  .image.is-350x350 {
+    height: 350px;
+    width: 350px; }
+  .image.is-400x400 {
+    height: 400px;
+    width: 400px; }
+  .image.is-450x450 {
+    height: 450px;
+    width: 450px; }
+  .image.is-500x500 {
+    height: 500px;
+    width: 500px; }
+  .image.is-550x550 {
+    height: 550px;
+    width: 550px; }
+  .image.is-600x600 {
+    height: 600px;
+    width: 600px; }
+  .image.is-650x650 {
+    height: 650px;
+    width: 650px; }
+  .image.is-700x700 {
+    height: 700px;
+    width: 700px; }
 
 .notification {
   background-color: whitesmoke;

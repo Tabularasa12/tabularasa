@@ -4,29 +4,24 @@ from utils.bulma import bulma
 from utils.icons import icons
 from utils.json import Json
 from settings import *
+from utils.config import ConfigFile
 
 from .ressources import *
+from settings import DEFAULT_LOGO_FILE_NAME
 
 DEFAULT_PARAMETERS = dict(
-    name = 'NAME',
-    autor = 'AUTOR',
-    description = 'DESCRIPTION',
-    viewport = 'width=device-width, initial-scale=1',
-    lang = 'fr',
-    charset = "UTF-8",
     color = 'transparent',
-    logo = 'logo.png',
-    favicon = 'favicon.ico',
     height = 'fullheight',
-    navbar = 'top'
+    navbar = None
 )
 
 AUTORIZED_HEIGHTS = ['small', 'medium', 'large', 'halfheight', 'fullheight']
 
 class Page(Tagger):
     def __init__(self, app):
-        config = app.config
-        header = config['HEADER']
+        self.config = ConfigFile(app.page_config_file_path)
+        header = self.config['header']
+        page = self.config['page']
         children = [
             HEAD(
                 TITLE(app.title, _id='title'),
@@ -53,16 +48,18 @@ class Page(Tagger):
         ]
         Tagger.__init__(self, 'HTML', *children)
         self._class -= __class__.__name__.lower()
-        self.color = 'dark'
-        self.height = 'fullheight'
+        self.color = page['color'] if 'color' in page.keys() else DEFAULT_PARAMETERS['color']
+        self.height = page['height'] if 'height' in page.keys() else DEFAULT_PARAMETERS['height']
 
-    def get_color(self):
+    def __get_color__(self):
         return self.content.color
-    def set_color(self, name):
+    def __set_color__(self, name):
         self.content.color = name
-    def del_color(self):
+        self.config['color'] = name
+    def __del_color__(self):
         del self.content.color
-    color = property(get_color, set_color, del_color)
+        self.config['color'] = None
+    color = property(__get_color__, __set_color__, __del_color__)
 
     def __get_height__(self):
         for height in ['small', 'medium', 'large', 'halfheight', 'fullheight']:
@@ -72,11 +69,40 @@ class Page(Tagger):
     def __set_height__(self, value):
         if value in AUTORIZED_HEIGHTS:
             self.content._class.replace(f'is-{self.__get_height__()}', f'is-{value}')
+            self.config['height'] = value
     def __del_height__(self):
         if name in AUTORIZED_HEIGHTS:
             self.content._class -= f'is-{self.__get_height__()}'
+            self.config['height'] = None
     height = property(__get_height__, __set_height__, __del_height__)
 
-    def xml(self):
-        return Tagger.xml(self)
+class Masterpage(Page):
+    def __init__(self, app):
+        Page.__init__(self, app)
 
+
+class Apppage(Page):
+    def __init__(self, app):
+        Page.__init__(self, app)
+        self._class += 'has-navbar-fixed-top'
+        self.body._class += 'is-justify-content-center'
+        
+        navbar = Navbar(_id='navbar', _class='is-fixed-top', color=self.color)
+        @app.before_request
+        def navbar_init():
+            navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text="Retour à la page d'accueil"), url=url_for('index'))
+        
+        # navbar.burger.text_color = 'white'
+        
+        # start = []
+        # for c in app.controllers:
+        #     c_name = c.rsplit('.', 1)[1]
+        #     if c_name != 'index':
+        #         start.append(Navitem(labelize(c_name), _href=url_for(f'{app.name}.{c_name}')))
+        # navbar.start.update(*start)
+
+        # admin = default.blueprints['admin']
+        # end = Navitem(Icon('cog', color='white'), _href=url_for(f'{admin.name}.index'))
+        # navbar.end.update(end)
+        # navbar.activate
+        self.head.update(navbar)

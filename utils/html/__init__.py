@@ -1,2 +1,2 @@
-from .page import Page
+from .page import Page, Masterpage, Apppage
 from .ressources import *

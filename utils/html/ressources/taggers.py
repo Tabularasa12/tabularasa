@@ -1,5 +1,6 @@
 from .helpers import TAGGER
 from copy import copy
+from settings import DEFAULT_SIZE
 
 TAGS = [
     "A",
@@ -33,7 +34,8 @@ TAGS = [
     "TITLE",
 ]
 
-__all__ = TAGS +['Tagger']
+__all__ = TAGS +['Tagger', 'AUTORIZED_COLORS']
+
 
 class Text_attr:
     types_sep = dict(
@@ -151,7 +153,7 @@ class Tagger(TAGGER):
             color='',
             back_color='',
             text_color='',
-            size=0,
+            size=DEFAULT_SIZE,
             _class='',
             _style='',
             **attributes

@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import os
 import datetime
+from copy import deepcopy
 
 from flask import (
     Blueprint,
@@ -17,6 +18,7 @@ from flask import (
     request,
     session,
     url_for,
+    current_app
 )
 from flask.helpers import send_from_directory
 from settings import *
@@ -31,7 +33,7 @@ from .regex import REGEX
 from .url import URL
 from flask_sqlalchemy import SQLAlchemy
 # from flask_mail import Mail
-from config import *
+from utils.config import *
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -65,6 +67,8 @@ class Master(Flask):
         self.title = labelize(import_name)
         run_mode = Development if self.config['DEBUG'] else Production 
         self.config.from_object(run_mode())
+        self.page_config_file_path = join(self.root_path, DEFAULT_CONFIG_FILE_NAME)
+        
         # mail.init_app(self)
         db.init_app(self)
 
@@ -80,7 +84,11 @@ class Master(Flask):
                 if not Users.query.all():
                     db.session.add(Users(email='email', password='password', active=True, confirmed_at=datetime.datetime.now(), role='administrateur'))
                 db.session.commit()
-            self.page = Page(self)
+            self.page = Masterpage(self)
+            
+            for c in self.controllers:
+                import_module(c).default
+
 
         @self.route('/update', methods=['POST'])
         def update():
@@ -132,11 +140,16 @@ class Master(Flask):
 
     def import_apps(self, path):
         app_names = [app for app in listdir(path, type='dir', regex=REGEX['apps'])]
-        path = path.strip(sep()).replace(sep(), '.')
         for a in app_names:
-            app = import_module(f'{path}.{a}').app
+            import_name = join(path,a).replace(sep(), '.')
+            app = import_module(import_name).app
             self.register_blueprint(app, url_prefix=f'/{a}')
+            with self.app_context():
+                for app in self.blueprints.values():
+                    app.page.favicon['_href'] = url_for(f'{app.name}.static', filename=DEFAULT_FAVICON_FILE_NAME)
+                    app.page.logo['_href'] = url_for(f'{app.name}.static', filename=DEFAULT_LOGO_FILE_NAME)
 
+    @property
     def controllers(self):
         apps = []
         for c in listdir(join(self.root_path, 'controllers'), type='file', regex=REGEX['controllers']):
@@ -145,23 +158,15 @@ class Master(Flask):
 
 class App(Blueprint):
     def __init__(self, name, import_name, master):
-        Blueprint.__init__(self, name, import_name, url_prefix=join(sep(), name))
+        Blueprint.__init__(self, name, import_name, url_prefix=join(sep(), name), static_folder='static')
         self.master = master
-        base_path = self.root_path.split(self.master.root_path)[1]
-        self.static_folder = join(self.root_path, 'static')
-        parameters_file = join(base_path.strip(sep()), DEFAULT_CONFIG_FILE_NAME)
-    #     self.page = Page(parameters_file)
-        
-    #     self.page.title.update(labelize(self.name))
+        self.title = labelize(self.name)
+        self.config = deepcopy(master.config)
+        self.page_config_file_path = join(self.root_path, DEFAULT_CONFIG_FILE_NAME)
 
-    # controllers = Master.controllers
-    # to_page = Master.to_page
+        with master.app_context():
+            self.page = Apppage(self)
 
-    # def _page(self):
-    #     page = self.page
-    #     page.bulma['_href'] = url_for('css', filename=bulma.css)
-    #     page.icons['_href'] = url_for('icons', filename=icons.css)
-    #     page.favicon['_href'] = url_for(f'{self.name}.static', filename=page.p['favicon'])
-    #     page.logo['_href'] = url_for(f'{self.name}.static', filename=page.p['logo'])
-    #     return page
+    controllers = Master.controllers
+    to_page = Master.to_page
 

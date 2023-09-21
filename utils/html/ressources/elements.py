@@ -1,4 +1,5 @@
 from .taggers import *
+from settings import DEFAULT_SIZE
 
 __all__ = [
     'Buttons',
@@ -17,24 +18,9 @@ __all__ = [
     'Level'
 ]
 
-INIT_SIZE = 6
-
 class Buttons(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
-
-    # def get_color(self):
-    #     return self.attributes['color']
-    # def set_color(self, name):
-    #     if name in self.AUTORIZED_COLORS:
-    #         for child in self.children:
-    #             child.color = name
-    #         self.attributes['color'] = name
-    # def del_color(self):
-    #     for child in self.children:
-    #         del child.color
-    #     self.attributes['color'] = None
-    # color = property(get_color, set_color, del_color)
 
 class Button(Tagger):
     nbr_of_sizes = 5
@@ -46,7 +32,6 @@ class Button(Tagger):
             self.autorized_sizes = range(1, self.nbr_of_sizes+1)
             self.INIT_SIZE = self.nbr_of_sizes - 1
         Tagger.__init__(self, _type, *children, **attributes)
-        self.size = self.attributes['size'] if 'size' in self.attributes.keys() else self.INIT_SIZE
     
     def get_url(self):
         return self.attributes['_href']
@@ -124,7 +109,13 @@ class Image(Tagger):
     size_correspondances = [50,40,32,24,19,15,12]
     all_sizes = size_correspondances + [16, 24, 32, 48, 64, 96, 128, 196, 256, 384, 512, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700]
     def __init__(self, **attributes):
-        Tagger.__init__(self, 'span', IMG(_src=attributes['url'] if 'url' in attributes.keys() else '#', _id='image'), **attributes)
+        image = IMG(
+            _src = attributes['url'] if 'url' in attributes.keys() else '#',
+            _title = attributes['text'] if 'text' in attributes.keys() else '',
+            _alt = attributes['replace'] if 'replace' in attributes.keys() else '',
+            _id='image'
+        )
+        Tagger.__init__(self, 'SPAN', image, **attributes)
 
     def __get_url__(self): 
         return self.image['_src']
@@ -134,23 +125,57 @@ class Image(Tagger):
         self.image['_src'] = '#'
     url = property(__get_url__, __set_url__, __del_url__)
 
-    def __set_size__(self, value):
-        if isinstance(value, int):
-            hold_size_class = None
-            for size in all_sizes:
-                if f'is-{size}x{size}' in self._class.list:
-                    hold_size_class = size
-            new_size_class = None
-            if value in range(1,8):
-                new_size_class = self.size_correspondances[value-1]
-            elif value in self.all_sizes:
-                new_size_class = value
-            if new_size_class:
-                new_size_class = f'is-{new_size_class}x{new_size_class}'
-                if hold_size_class:
-                    self._class.replace(hold_size_class, new_size_class)
-                else:
-                    self._class += new_size_class
+    def __get_text__(self): 
+        return self.image['_title']
+    def __set_text__(self, value): 
+        self.image['_title'] = value
+    def __del_text__(self):
+        self.image['_title'] = ''
+    text = property(__get_text__, __set_text__, __del_text__)
+
+    def __get_replace__(self): 
+        return self.image['_alt']
+    def __set_replace__(self, value): 
+        self.image['_alt'] = value
+    def __del_replace__(self):
+        self.image['_alt'] = ''
+    replace = property(__get_replace__, __set_replace__, __del_replace__)
+
+    # @property
+    # def get_size_class_num(self):
+    #     for size in self.all_sizes:
+    #         if f'is-{size}x{size}' in self._class.list:
+    #             return size
+    #     return None
+
+    # def __get_size__(self):
+    #     class_num = self.get_size_class_num
+    #     if class_num:
+    #         if class_num in self.size_correspondances:
+    #             for num, size in enumerate(self.size_correspondances):
+    #                 if size == class_num:
+    #                     return num
+    #         else:
+    #             return class_num
+    #     return None
+    # def __set_size__(self, value):
+    #     if isinstance(value, int):
+    #         hold_size_class = self.get_size_class_num
+    #         new_size_class = None
+    #         if value in range(1,8):
+    #             new_size_class = self.size_correspondances[value-1]
+    #         elif value in self.all_sizes:
+    #             new_size_class = value
+    #         if new_size_class:
+    #             new_size_class = f'is-{new_size_class}x{new_size_class}'
+    #             if hold_size_class:
+    #                 hold_size_class = f'is-{hold_size_class}x{hold_size_class}'
+    #                 self._class.replace(hold_size_class, new_size_class)
+    #             else:
+    #                 self._class += new_size_class
+    # def __del_size__(self):
+    #     self._class -= f'is-{self.get_size_class_num}x{self.get_size_class_num}'
+    # size = property(__get_size__, __set_size__, __del_size__)
 
     def __get_color__(self):
         return self.image.back_color
@@ -159,14 +184,24 @@ class Image(Tagger):
             self.image.back_color = name
     def __del_color__(self):
         del self.image.back_color
-    # color = property(__get_color__, __set_color__, __del_color__)
+    color = property(__get_color__, __set_color__, __del_color__)
 
 class Icon_image(Tagger):
     def __init__(self, **attributes):
-        Tagger.__init__(self, 'span', IMG(_src=attributes['url'], _id='image'), **attributes)
+        Tagger.__init__(self, 'SPAN', IMG(_src=attributes['url'], _id='image'), **attributes)
         self._class.replace(self.__class__.__name__.lower(), 'icon')
-        self.icon = self.image
-    size = Icon.size
+        self.icon = self.image    
+
+    def get_size(self):
+        return self.image.size
+    def set_size(self, value):
+        self.image.size = value
+    def del_size(self):
+        del self.image.size
+    size = property(get_size, set_size, del_size)
+
+    replace = Image.replace
+    text = Image.text
     url = Image.url
     color = Image.color
 
