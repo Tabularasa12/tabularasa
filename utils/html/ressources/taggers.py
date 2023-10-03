@@ -151,65 +151,25 @@ NBR_OF_SIZE = 7
 class Tagger(TAGGER):
     AUTORIZED_SIZES = range(1, (NBR_OF_SIZE+1))
     def __init__(self,
-            name,
-            *children,
-            color='',
-            back_color='',
-            text_color='',
-            size=DEFAULT_SIZE,
-            _class='',
-            _style='',
-            **attributes
+        name,
+        *children,
+        _class='',
+        _style='',
+        color='',
+        back_color='',
+        text_color='',
+        size='',
+        **attributes
         ):
         children = [*children] if children else []
         TAGGER.__init__(self, name, *children, **attributes)
-        self._class = Class(_class)
-        self._style = Style(_style)
-        class_name = self.__class__.__name__
-        if class_name.upper() not in __all__:
-            self._class += class_name.lower()
-        self._class
-        self.color = color
-        self.back_color = back_color
-        self.text_color = text_color
-        self.size = size
-
-    def get_children_by_id(self, key):
-        return self.find(f'#{key}')
-
-    def __getattr__(self, name):
-        childs = self.get_children_by_id(name)
-        if isinstance(childs, list) and len(childs) == 1:
-            return childs[0]
-        return object.__getattr__(self, name)
+        self._class = _class
+        self._style = _style
+        if color: self.color = color
+        if back_color: self.back_color = back_color
+        if text_color: self.text_color = text_color
+        if size: self.size = size
     
-    def __delattr__(self, name):
-        childs = self.get_children_by_id(name)
-        if isinstance(childs, list) and len(childs) == 1:
-            for i, c in enumerate(self.children):
-                if c == childs[0]:
-                    del self.children[1]
-        else:
-            object.__delattr__(self, name)
-
-    def update(self, *children, **attributes):
-        self.children = [*children] if children else copy(self.children)
-        for key, value in attributes.items():
-            if key.startswith('_'):
-                self.attributes[key] = value
-            else:
-                exec(f'self.{key}="{value}"')
-
-    def get_class(self): return self['_class']
-    def set_class(self, value): self['_class'] = Class(value)
-    def del_class(self): self['_class'] = Class('')
-    _class = property(get_class, set_class, del_class)
-
-    def get_style(self): return self['_style']
-    def set_style(self, value): self['_style'] = Style(value)
-    def del_style(self): self['_style'] = Style('')
-    _style = property(get_style, set_style, del_style)
-
     def __get_color__(self):
         for color in AUTORIZED_COLORS:
             if f'is-{color}' in self._class.list:
@@ -257,6 +217,42 @@ class Tagger(TAGGER):
     def __del_size__(self):
         self._class -= f'is-size-{self.__get_size__()}'
     size = property(__get_size__, __set_size__, __del_size__)
+
+    def get_children_by_id(self, key):
+        return self.find(f'#{key}')
+
+    def __getattr__(self, name):
+        childs = self.get_children_by_id(name)
+        if isinstance(childs, list) and len(childs) == 1:
+            return childs[0]
+        return object.__getattr__(self, name)
+    
+    def __delattr__(self, name):
+        childs = self.get_children_by_id(name)
+        if isinstance(childs, list) and len(childs) == 1:
+            for i, c in enumerate(self.children):
+                if c == childs[0]:
+                    del self.children[1]
+        else:
+            object.__delattr__(self, name)
+
+    def update(self, *children, **attributes):
+        self.children = [*children] if children else copy(self.children)
+        for key, value in attributes.items():
+            if key.startswith('_'):
+                self.attributes[key] = value
+            else:
+                exec(f'self.{key}="{value}"')
+
+    def get_class(self): return self['_class']
+    def set_class(self, value): self['_class'] = Class(value)
+    def del_class(self): self['_class'] = Class('')
+    _class = property(get_class, set_class, del_class)
+
+    def get_style(self): return self['_style']
+    def set_style(self, value): self['_style'] = Style(value)
+    def del_style(self): self['_style'] = Style('')
+    _style = property(get_style, set_style, del_style)
 
     @property
     def hide(self):

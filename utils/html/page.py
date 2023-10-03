@@ -48,7 +48,6 @@ class Page(Tagger):
             )
         ]
         Tagger.__init__(self, 'HTML', *children)
-        self._class -= __class__.__name__.lower()
         self.color = page['color'] if 'color' in page.keys() else DEFAULT_PARAMETERS['color']
         self.height = page['height'] if 'height' in page.keys() else DEFAULT_PARAMETERS['height']
 
@@ -97,6 +96,8 @@ class Apppage(Page):
                 c_name = c.rsplit('.', 1)[1]
                 if c_name != 'index':
                     start.append(Navitem(labelize(c_name), url=url_for(f'{app.name}.{c_name}')))
+                else:
+                    start.append(Navitem(Icon('home'), url=url_for(f'{app.name}.index')))
             navbar.start.update(*start)
 
         # admin = default.blueprints['admin']

@@ -21,12 +21,15 @@ __all__ = [
 class Buttons(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
 
 class Button(Tagger):
     def __init__(self, *children, _type='A', **attributes):
         Tagger.__init__(self, _type, *children, **attributes)
+        self._class += self.__class__.__name__.lower()
         self.url = attributes['url'] if 'url' in attributes.keys() else ''
         self.title = attributes['title'] if 'title' in attributes.keys() else None
+        if not 'size' in self.attributes.keys(): self.size = DEFAULT_SIZE
 
     def __get_url__(self):
         return self.attributes['_href']
@@ -84,8 +87,10 @@ class Text(Tagger):
 class Icon(Tagger):
     def __init__(self, code, prefix='fa-', **attributes):
         Tagger.__init__(self, 'SPAN', I(_id='icon', _class=f'fa {prefix}{code}'), **attributes)
+        self._class += self.__class__.__name__.lower()
         self.prefix = prefix
         self.code = code
+        self.size = self.attributes['size'] if 'size' in self.attributes.keys() else DEFAULT_SIZE
 
     color = Tagger.text_color
 
@@ -118,6 +123,7 @@ class Image(Tagger):
             _id='image',
         )
         Tagger.__init__(self, 'SPAN', image, **attributes)
+        self._class += self.__class__.__name__.lower()
 
     def __get_url__(self): 
         return self.image['_src']
@@ -186,7 +192,7 @@ class Image(Tagger):
 class Icon_image(Tagger):
     def __init__(self, **attributes):
         Tagger.__init__(self, 'SPAN', IMG(_src=attributes['url'], _id='image'), **attributes)
-        self._class.replace(self.__class__.__name__.lower(), 'icon')
+        self._class += 'icon'
 
     def get_size(self):
         return self.image.size
@@ -210,6 +216,7 @@ class Title(Tagger):
         else:
             self._size = self.default_size
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
     
     # def __get_size__(self):
     #     return self._size
@@ -237,22 +244,27 @@ class Content(Tagger):
 class Block(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
 
 class Box(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
 
 class Container(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
 
 class Section(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes, _base='section')
+        self._class += self.__class__.__name__.lower()
 
 class Level(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
 
 class Notification(Tagger):
     def __init__(self, id, message, url, **attributes):
@@ -261,6 +273,7 @@ class Notification(Tagger):
         url.vars['del_flash'] = self.id
         button = Button(url=url(), _class='delete', _name='button')
         Tagger.__init__(self, button, str(message), **attributes)
+        self._class += self.__class__.__name__.lower()
         if 'active' in self.attributes.keys():
             if self.attributes['active']:
                 self.activate

@@ -16,12 +16,11 @@ class Burger(Button):
         attributes["aria-label"] = "menu"
         attributes["aria-expanded"] = "false"
         Button.__init__(self, *children, **attributes)
-        self._class -= self.__class__.__name__.lower()
 
 class Navitem(Button):
     def __init__(self, *children, **attributes):
         Button.__init__(self, *children, **attributes)
-        self._class.replace(self.__class__.__name__.lower(), 'navbar-item icon-text')
+        self._class.replace('button', 'navbar-item icon-text')
 
     def activate(self):
         self._class += 'is-active'
@@ -32,14 +31,14 @@ class Navitem(Button):
 # class Divider(Tagger):
 #     def __init__(self, *children, **attributes):
 #         Tagger.__init__(self, *children, **attributes, _base='HR')
-#         self._class.replace('divider', "navbar-divider")
+        # self._class += 'navbar-divider'
 
 # class Dropdown(Navitem):
 #     def __init__(self, title=None, *children, **attributes):
 #         self.link = A(title, _class="navbar-link")
 #         self.list = DIV(*children, _class="navbar-dropdown")
 #         Navitem.__init__(self, self.link, self.list, **attributes)
-#         self._class.replace('dropdown', 'is-hoverable')
+#         self._class.replace('navbar-item icon-text', 'is-hoverable')
     
     # @property
     # def activate(self): 
@@ -70,6 +69,7 @@ class Navbar(Tagger):
         attributes["_role"] = "navigation"
         attributes["_aria-label"] = "main navigation"
         Tagger.__init__(self, 'nav', *children, **attributes)
+        self._class += self.__class__.__name__.lower()
         self._class += "is-fullhd"
     
     def __get_position__(self):
