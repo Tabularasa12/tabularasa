@@ -4,33 +4,39 @@ from utils.bulma import bulma
 from utils.icons import icons
 from utils.json import Json
 from settings import *
-from utils.config import ConfigFile
 from utils.functions import labelize
 
 from .ressources import *
 from settings import DEFAULT_LOGO_FILE_NAME
 
+
 DEFAULT_PARAMETERS = dict(
+    autor = "Tabularasa",
+    charset = "UTF-8",
+    description = "Regarder le passé pour construire l'avenir",
+    lang = "fr",
+    viewport = "width=device-width, initial-scale=1",
     color = 'transparent',
     height = 'fullheight',
-    navbar = None
+    navbar = None,
 )
 
 AUTORIZED_HEIGHTS = ['small', 'medium', 'large', 'halfheight', 'fullheight']
 
 class Page(Tagger):
     def __init__(self, app):
-        self.config = ConfigFile(app.page_config_file_path)
-        header = self.config['header']
-        page = self.config['page']
+        self.config = Json(app.page_config_file_path)
+        for k, v in DEFAULT_PARAMETERS.items():
+            if not k in self.config.keys():
+                self.config[k] = v
         children = [
             HEAD(
                 TITLE(app.title, _id='title'),
                 META(_name="name", _id='name', _content=app.name),
-                META(_name="autor", _id='autor', _content=header['autor']),
-                META(_name="description", _id='description', _content=header['description']),
-                META(_name="viewport", _id='viewport', _content=header['viewport']),
-                META(_charset=header['charset'], _id='charset'),
+                META(_name="autor", _id='autor', _content=self.config['autor']),
+                META(_name="description", _id='description', _content=self.config['description']),
+                META(_name="viewport", _id='viewport', _content=self.config['viewport']),
+                META(_charset=self.config['charset'], _id='charset'),
                 META(_name="pdfkit-page-size", _id='pdfkit-page-size', _content="A4"),
                 META(_name="pdfkit-orientation", _id='pdfkit-orientation', _content="Portrait"),
                 LINK(_rel="stylesheet", _type='text/css', _href=url_for('css', filename=bulma.css), _id='bulma'),
@@ -48,8 +54,8 @@ class Page(Tagger):
             )
         ]
         Tagger.__init__(self, 'HTML', *children)
-        self.color = page['color'] if 'color' in page.keys() else DEFAULT_PARAMETERS['color']
-        self.height = page['height'] if 'height' in page.keys() else DEFAULT_PARAMETERS['height']
+        self.color = self.config['color']
+        self.height = self.config['height']
 
     def __get_color__(self):
         return self.content.color
