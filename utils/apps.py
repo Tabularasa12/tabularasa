@@ -7,11 +7,10 @@ import hmac
 import os
 import datetime
 from copy import deepcopy
-
+from markupsafe import Markup
 from flask import (
     Blueprint,
     Flask,
-    Markup,
     Response,
     redirect,
     render_template,
@@ -28,12 +27,12 @@ from .files import *
 from .functions import control_path_necessaries, labelize, now
 from .html import *
 from .icons import icons
-# from .parameters import Parameters, edict
 from .regex import REGEX
 from .url import URL
 from flask_sqlalchemy import SQLAlchemy
 # from flask_mail import Mail
 from utils.config import *
+from utils.html import Form_config, Html_form
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -164,9 +163,35 @@ class App(Blueprint):
         self.config = deepcopy(master.config)
         self.page_config_file_path = join(self.root_path, DEFAULT_CONFIG_FILE_NAME)
 
-        with master.app_context():
+        with self.master.app_context():
             self.page = Apppage(self)
+
+        @self.route('/config', methods=['GET', 'POST'])
+        @self.to_page()
+        def config():
+            print(request.form)
+            config = Form_config(request.form)
+            body = Html_form(config)
+
+            # body = FORM(
+            #     DIV(
+            #         LABEL('Email', _class='label'),
+            #         DIV(
+            #             INPUT(_class='input is-danger', _type='email', _placeholder="Email input", _value="hello@"),
+            #             SPAN(I(_class="fas fa-envelope"), _class='icon is-small is-left'),
+            #             SPAN(I(_class="fas fa-exclamation-triangle"), _class='icon is-small is-right'),
+            #             P('This email is invalid', _class='help is-danger'),
+            #             _class='control has-icons-left has-icons-right'
+            #         ),
+            #         _class='field'
+            #     ),
+            #     _class='form box'
+            # )
+            
+            return locals()
+
 
     controllers = Master.controllers
     to_page = Master.to_page
+
 

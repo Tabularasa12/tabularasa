@@ -11,11 +11,12 @@ __all__ = ['Navitem', 'Navbar']
 class Burger(Button):
     def __init__(self, name, **attributes):
         children = [SPAN(), SPAN(), SPAN()]
-        attributes = dict(_role='button', _class="navbar-burger", **attributes)
+        attributes = dict(_role='button', **attributes)
         attributes["data-target"] = name
         attributes["aria-label"] = "menu"
         attributes["aria-expanded"] = "false"
         Button.__init__(self, *children, **attributes)
+        self._class.replace('button', 'navbar-burger')
 
 class Navitem(Button):
     def __init__(self, *children, **attributes):
@@ -46,8 +47,8 @@ class Navitem(Button):
     #         self.link._class += 'is-active'
 
 
-AUTORIZED_POSITIONS = ['top', 'bottom']
 class Navbar(Tagger):
+    AUTORIZED_POSITIONS = ['top', 'bottom']
     def __init__(self, starts=[], ends=[], **attributes):
         if not isinstance(starts, list): starts=[starts]
         if not isinstance(ends, list): ends=[ends]
@@ -71,22 +72,28 @@ class Navbar(Tagger):
         Tagger.__init__(self, 'nav', *children, **attributes)
         self._class += self.__class__.__name__.lower()
         self._class += "is-fullhd"
-    
+
+    # def __get_color__(self):
+    #     return self.menu.color
+    # def __set_color__(self, name):
+    #     self._class += f'is-{name}'
+    #     self.menu.color = name
+    #     self.start.color = name
+    #     self.end.color = name
+    #     self.brand.color = name
+    # def __del_color__(self):
+    #     del self.menu.color
+    # color = property(__get_color__, __set_color__, __del_color__)
+
     def __get_position__(self):
-        for position in AUTORIZED_POSITIONS:
+        for position in self.AUTORIZED_POSITIONS:
             if f'is-fixed-{position}' in self._class.list:
                 return position
         return None
     def __set_position__(self, name):
-        if name in AUTORIZED_POSITIONS:
+        if name in self.AUTORIZED_POSITIONS:
             hold = self.__get_position__()
             self._class.replace(f'is-fixed-{hold}', f'is-fixed-{name}')
-            if 'parent' in self.__dict__.keys():
-                element = self.parent
-                while element.name != 'HTML':
-                    element = element.parent
-                
-                element._class.replace(f'has-navbar-fixed-{hold}', f'has-navbar-fixed-{name}')
             for navitem in self.start.children+self.end.children:
                 if isinstance(navitem, Navitem):
                     if 'has-dropdown' in navitem._class.list:

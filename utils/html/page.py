@@ -47,7 +47,7 @@ class Page(Tagger):
             ),
             DIV(
                 DIV(_id='head'),
-                DIV(_id='body'),
+                Section(_id='body'),
                 DIV(_id='foot'),
                 _class = 'hero',
                 _id='content'
@@ -60,11 +60,16 @@ class Page(Tagger):
     def __get_color__(self):
         return self.content.color
     def __set_color__(self, name):
+        self.back_color = name
         self.content.color = name
-        self.config['color'] = name
+        if self.get_children_by_id('navbar'):
+            self.navbar.color = name
+        # self.config['color'] = name
     def __del_color__(self):
         del self.content.color
-        self.config['color'] = None
+        if self.get_children_by_id('navbar'):
+            self.navbar.color = None
+        # self.config['color'] = None
     color = property(__get_color__, __set_color__, __del_color__)
 
     def __get_height__(self):
@@ -75,11 +80,11 @@ class Page(Tagger):
     def __set_height__(self, value):
         if value in AUTORIZED_HEIGHTS:
             self.content._class.replace(f'is-{self.__get_height__()}', f'is-{value}')
-            self.config['height'] = value
+            # self.config['height'] = value
     def __del_height__(self):
         if name in AUTORIZED_HEIGHTS:
             self.content._class -= f'is-{self.__get_height__()}'
-            self.config['height'] = None
+            # self.config['height'] = None
     height = property(__get_height__, __set_height__, __del_height__)
 
 class Masterpage(Page):
@@ -93,10 +98,12 @@ class Apppage(Page):
         self._class += 'has-navbar-fixed-top'
         self.body._class += 'is-justify-content-center'
         
-        navbar = Navbar(_id='navbar', _class='is-fixed-top', color=self.color)
+        self.navbar = Navbar(_id='navbar', _class='is-fixed-top', color=self.color)
         @app.before_request
         def navbar_init():
-            navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text="Retour à la page d'accueil"), url=url_for('index'))
+            if self.config['navbar']:
+                self.navbar_position = self.config['navbar']
+            self.navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text="Retour à la page d'accueil"), url=url_for('index'))
             start = []
             for c in app.controllers:
                 c_name = c.rsplit('.', 1)[1]
@@ -104,10 +111,27 @@ class Apppage(Page):
                     start.append(Navitem(labelize(c_name), url=url_for(f'{app.name}.{c_name}')))
                 else:
                     start.append(Navitem(Icon('home'), url=url_for(f'{app.name}.index')))
-            navbar.start.update(*start)
+            self.navbar.start.update(*start)
+            end = Navitem(Icon('cog'), url=url_for(f'{app.name}.config'))
+            self.navbar.end.update(end)
+            self.navbar.activate
+            self.head.update(self.navbar)
 
-        # admin = default.blueprints['admin']
-        # end = Navitem(Icon('cog', color='white'), _href=url_for(f'{admin.name}.index'))
-        # navbar.end.update(end)
-        # navbar.activate
-        self.head.update(navbar)
+    def __get_navbar_position__(self):
+        for position in self.navbar.AUTORIZED_POSITIONS:
+            if f'has-navbar-fixed-{position}' in self._class.list:
+                return position
+        return None
+    def __set_navbar_position__(self, name):
+        if name in self.navbar.AUTORIZED_POSITIONS:
+            hold = self.__get_navbar_position__()
+            self._class.replace(f'has-navbar-fixed-{hold}', f'has-navbar-fixed-{name}')
+            self.navbar.position = name
+            # self.config['navbar'] = name
+    def __del_navbar_position__(self):
+        hold = self.__get_navbar_position__()
+        self._class -= f'has-navbar-fixed-{hold}'
+        self.navbar.position = None
+        # self.config['navbar'] = None
+    navbar_position = property(__get_navbar_position__, __set_navbar_position__, __del_navbar_position__)
+

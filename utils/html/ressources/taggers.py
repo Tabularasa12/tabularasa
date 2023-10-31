@@ -11,6 +11,7 @@ TAGS = [
     "HTML",
     "IMG",
     "INPUT",
+    "BUTTON",
     "LABEL",
     "LI",
     "OL",
@@ -34,8 +35,32 @@ TAGS = [
     "TITLE",
 ]
 
-__all__ = TAGS +['Tagger', 'AUTORIZED_COLORS']
+__all__ = TAGS +['Tagger', 'AUTORIZED_COLORS', 'str_2_tagger']
 
+
+def str_2_tagger(tagger):
+    tagger_split = tagger.lstrip('<').rstrip('>').split(' ', 1)
+    
+    name = tagger_split[0]
+    
+    tagger = tagger_split[1].rstrip(f'</{name}')
+    childs = []
+    if '<' in tagger and '>' in tagger:
+        childrens = tagger.split('>', 1)[1].split('><')
+        for children in childrens:
+            childs.append(str_2_tagger(children))
+    elif '>' in tagger:
+        childs.append(tagger.split('>', 1)[1])
+
+    attrs = dict()
+    attributes = tagger.split('>', 1)[0].split(' ')
+    for attribute in attributes:
+        attribute_split = attribute.split('=')
+        key = f'_{attribute_split[0]}'
+        value = attribute_split[1].strip('"').strip("'")
+        attrs[key] = value
+
+    return Tagger(name, *childs, **attrs)
 
 class Text_attr:
     types_sep = dict(
@@ -67,6 +92,7 @@ class Text_attr:
         ret = "{}".format(self.sep.join(strings))
         if ret:
             ret = '{}{}'.format(ret, self.sep if ret[-1] != self.sep else '')
+            if ret[-1] == ' ': ret = ret[:-1]
         return ret
     
     @property

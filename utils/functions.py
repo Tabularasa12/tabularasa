@@ -5,7 +5,8 @@ from inspect import signature
 from sys import path as syspath
 from functools import wraps
 from datetime import datetime
-from flask import Blueprint, Flask, render_template, Markup, send_from_directory
+from flask import Blueprint, Flask, render_template, send_from_directory
+
 
 from settings import DEFAUT_TEMPLATE, DEFAULT_LOG_TIME_FORMAT
 from utils.files import *

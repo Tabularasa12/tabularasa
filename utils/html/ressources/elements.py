@@ -15,7 +15,8 @@ __all__ = [
     'Box',
     'Container',
     'Section',
-    'Level'
+    'Level',
+    'Tag'
 ]
 
 class Buttons(Tagger):
@@ -24,11 +25,28 @@ class Buttons(Tagger):
         self._class += self.__class__.__name__.lower()
 
 class Button(Tagger):
-    def __init__(self, *children, _type='A', **attributes):
-        Tagger.__init__(self, _type, *children, **attributes)
+    def __init__(self, *children, type='link', **attributes):
+        if type == 'link':
+            name = 'A'
+        elif type == 'button':
+            name = type.upper()
+        elif type == 'submit' or type == 'reset':
+            attributes['_type'] = type
+            name = 'INPUT'
+            if children:
+                children = [*children]
+                if len(children) == 1:
+                    attributes['_value'] = children[0]
+                    children = []
+        Tagger.__init__(self, name, *children, **attributes)
         self._class += self.__class__.__name__.lower()
-        self.url = attributes['url'] if 'url' in attributes.keys() else ''
-        self.title = attributes['title'] if 'title' in attributes.keys() else None
+        if self._name == 'A':
+            if 'url' in attributes.keys():
+                self.url = attributes['url']
+                del self.attributes['url']
+            else:
+                self.url = ''
+        # self.title = attributes['title'] if 'title' in attributes.keys() else None
         if not 'size' in self.attributes.keys(): self.size = DEFAULT_SIZE
 
     def __get_url__(self):
@@ -39,48 +57,109 @@ class Button(Tagger):
         self.attributes['_href'] = '#'
     url = property(__get_url__, __set_url__, __del_url__)
 
-    def __get_text__(self):
-        return self.attributes['_title']
-    def __set_text__(self, value): 
-        self.attributes['_title'] = value
-    def __del_text__(self):
-        self.attributes['_title'] = ''
-    text = property(__get_text__, __set_text__, __del_text__)
+    # def __get_text__(self):
+    #     return self.attributes['_title']
+    # def __set_text__(self, value): 
+    #     self.attributes['_title'] = value
+    # def __del_text__(self):
+    #     self.attributes['_title'] = ''
+    # text = property(__get_text__, __set_text__, __del_text__)
+
+# class Submit(Tagger):
+#     def __init__(self, type='submit', value=None, **attributes):
+#         Tagger.__init__(self, 'INPUT', _type=type, **attributes)
+#         self.value = value if value else labelize(type)
+
+#     def __get_type__(self):
+#         return self.attributes['_type']
+#     def __set_type__(self, value): 
+#         self.attributes['_type'] = value
+#     def __del_type__(self):
+#         self.attributes['_type'] = 'submit'
+#     type = property(__get_type__, __set_type__, __del_type__)
+
+#     def __get_value__(self):
+#         return self.attributes['_value']
+#     def __set_value__(self, value): 
+#         self.attributes['_value'] = value
+#     def __del_value__(self):
+#         self.attributes['_value'] = labelize(self.attributes['_type'])
+#     value = property(__get_value__, __set_value__, __del_value__)
 
 class Text(Tagger):
-    autorized_formats = ['capitalized', 'lowercase', 'uppercase', 'italic', 'bold']
+    AUTORIZED_CASES = ['capitalized', 'lowercase', 'uppercase']
+    AUTORIZED_TRANSFORMS = ['italic', 'underlined']
+    AUTORIZED_WEIGHTS = ['light', 'normal', 'medium', 'semibold', 'bold']
     def __init__(self, *text, **attributes):
-        Tagger.__init__(self, *text, **attributes, _base='SPAN')
-        self.formats = self.attributes['formats'] if 'formats' in attributes.keys() else None
+        Tagger.__init__(self, 'SPAN', *text, **attributes)
+        if 'case' in self.attributes.keys():
+            self.case = self.attributes['case']
+            del self.attributes['case']
+        if 'transform' in self.attributes.keys():
+            self.transform = self.attributes['transform']
+            del self.attributes['transform']
+        if 'weight' in self.attributes.keys():
+            self.weight = self.attributes['weight']
+            del self.attributes['weight']
+        else:
+            self.weight = 'normal'
 
-    def get_formats(self):
-        return self.attributes['formats']
-    def set_formats(self, *name):
-        name = [*name]
-        for n in name:
-            if n in self.autorized_formats:
-                sizes = ['capitalized', 'lowercase', 'uppercase']
-                if n in sizes:
-                    sizes.remove(n)
-                    for size in sizes:
-                        self._class -= 'is-{}'.format(size)
-                        if self.formats:
-                            if size in self.formats:
-                                self.attributes['formats'].remove(size)
-                if n == 'bold':
-                    self._class += 'has-text-weight-{}'.format(n)
-                else:
-                    self._class += 'is-{}'.format(n)
-                self.attributes['formats'].append(n)
-    def del_formats(self):
-        for type in self.autorized_formats:
-            if type == 'bold':
-                self._class -= 'has-text-weight-{}'.format(type)
+    def __get_case__(self):
+        for case in self.AUTORIZED_CASES:
+            if f'is-{case}' in self._class.list:
+                return case
+        return None
+    def __set_case__(self, name):
+        if name in self.AUTORIZED_CASES:
+            hold = self.__get_case__()
+            if hold:
+                self._class.replace(f'is-{hold}', f'is-{name}')
             else:
-                self._class -= 'is-{}'.format(type)
-            if type in self.formats:
-                self.attributes['formats'].remove(type)
-    formats = property(get_formats, set_formats, del_formats)
+                self._class += f'is-{name}'
+    def __del_case__(self):
+        if name in self.AUTORIZED_CASES:
+            hold = self.__get_case__()
+            if hold:
+                self._class -= f'is-{hold}'
+    case = property(__get_case__, __set_case__, __del_case__)
+
+    def __get_transform__(self):
+        ret = []
+        for transform in self.AUTORIZED_TRANSFORMS:
+            if f'is-{transform}' in self._class.list:
+                ret.append(transform)
+        return ret
+    def __set_transform__(self, names):
+        self.__del_transform__()
+        if isinstance(names, str): names = [names]
+        for name in [*names]:
+            if name in self.AUTORIZED_TRANSFORMS:
+                self._class += f'is-{name}'
+    def __del_transform__(self):
+        for name in self.AUTORIZED_TRANSFORMS:
+            if f'is-{name}' in self._class.list:
+                self._class -= f'is-{name}'
+    transform = property(__get_transform__, __set_transform__, __del_transform__)
+
+
+    def __get_weight__(self):
+        for weight in self.AUTORIZED_WEIGHTS:
+            if f'has-text-weight-{weight}' in self._class.list:
+                return weight
+        return None
+    def __set_weight__(self, name):
+        if name in self.AUTORIZED_WEIGHTS:
+            hold = self.__get_weight__()
+            if hold:
+                self._class.replace(f'has-text-weight-{hold}', f'has-text-weight-{name}')
+            else:
+                self._class += f'has-text-weight-{name}'
+    def __del_weight__(self):
+        if name in self.AUTORIZED_WEIGHTS:
+            hold = self.__get_weight__()
+            if hold:
+                self._class -= f'has-text-weight-{hold}'
+    weight = property(__get_weight__, __set_weight__, __del_weight__)
 
     color = Tagger.text_color
 
@@ -323,6 +402,11 @@ class Notification(Tagger):
         Tagger.del_color(self)
         self.button.color = None
     color = property(get_color, set_color, del_color)
+
+class Tag(Tagger):
+    def __init__(self, *children, **attributes):
+        Tagger.__init__(self, 'SPAN', *children, **attributes)
+        self._class += 'tag'
 
 
 # class Flash(Container):

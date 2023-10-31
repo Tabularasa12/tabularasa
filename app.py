@@ -37,6 +37,7 @@ import datetime
 #     '/backend': backend
 # })
 
+
 default = Master(APP_NAME)
 default.import_apps(NECESSARIES['apps'])
 default.page._style += "background-image: linear-gradient(to right top, yellow, purple);"
