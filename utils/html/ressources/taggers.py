@@ -43,7 +43,7 @@ def str_2_tagger(tagger):
     
     name = tagger_split[0]
     
-    tagger = tagger_split[1].rstrip(f'</{name}')
+    tagger = tagger_split[1].rsplit(f'</{name}', 1)[0]
     childs = []
     if '<' in tagger and '>' in tagger:
         childrens = tagger.split('>', 1)[1].split('><')
@@ -60,7 +60,7 @@ def str_2_tagger(tagger):
         value = attribute_split[1].strip('"').strip("'")
         attrs[key] = value
 
-    return Tagger(name, *childs, **attrs)
+    return dict(name=name, children=childs, attributes=attrs)
 
 class Text_attr:
     types_sep = dict(

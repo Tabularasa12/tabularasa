@@ -2,12 +2,12 @@ from flask import url_for
 from .. import app
 from utils.html import *
 from utils.functions import labelize
-from models import Users
+from models import Db_users
 
 @app.route('/users', methods=['GET', 'POST'])
 @app.to_page()
 def users():
-    body = Users.query.all()
+    body = Db_users.query.all()
     return locals()
 
 # body = Buttons(logo, _class='is-centered')

@@ -32,7 +32,7 @@ from .url import URL
 from flask_sqlalchemy import SQLAlchemy
 # from flask_mail import Mail
 from utils.config import *
-from utils.html import Form_config, Html_form
+from wtforms import Form, StringField, validators
 
 NECESSARIES = dict(
     apps = 'apps',
@@ -77,11 +77,11 @@ class Master(Flask):
         with self.app_context():
             if self.config['DB_CREATE_ALL']:
                 db.create_all()
-                if not Roles.query.all():
-                    db.session.add(Roles(name='administrateur'))
-                    db.session.add(Roles(name='utilisateur'))
-                if not Users.query.all():
-                    db.session.add(Users(email='email', password='password', active=True, confirmed_at=datetime.datetime.now(), role='administrateur'))
+                if not Db_roles.query.all():
+                    db.session.add(Db_roles(name='administrateur'))
+                    db.session.add(Db_roles(name='utilisateur'))
+                if not Db_users.query.all():
+                    db.session.add(Db_users(email='email', password='password', active=True, confirmed_at=datetime.datetime.now(), role='administrateur'))
                 db.session.commit()
             self.page = Masterpage(self)
             
@@ -170,9 +170,9 @@ class App(Blueprint):
         @self.to_page()
         def config():
             print(request.form)
-            config = Form_config(request.form)
-            body = Html_form(config)
+            body = Html_form(Form_config, request)
 
+            # body = Form_config(request)
             # body = FORM(
             #     DIV(
             #         LABEL('Email', _class='label'),

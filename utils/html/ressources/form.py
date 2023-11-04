@@ -1,47 +1,135 @@
-from .taggers import *
-from .elements import *
-from utils.functions import labelize
-from settings import DEFAULT_SIZE
-from wtforms import Form, SelectField, RadioField, StringField, validators
 from markupsafe import Markup
+from wtforms import Form, StringField
+
+from settings import DEFAULT_SIZE
+from utils.functions import labelize
+
+from .elements import *
+from .taggers import *
+
 
 class Control(Tagger):
-    CLASSES = dict(
-        CheckboxInput = 'input',
-        FileInput = 'input',
-        HiddenInput = 'input',
-        ListWidget = 'select is-multiple',
-        PasswordInput = 'input',
-        RadioInput = 'input',
-        Select = 'select',
-        SubmitInput = 'input',
-        TableWidget = '',
-        TextArea = 'textarea',
-        TextInput = 'input',
-        Option = ''
-    )
-    def __init__(self, name=None, field=None, **attributes):
-        widget = str_2_tagger(str(field))
-        widget._class += self.CLASSES[field.widget.__class__.__name__]
-        attributes['_id'] = f'{name}_control'
-        Tagger.__init__(self, 'DIV', widget, **attributes)
+    WIDGET_CLASSES = {
+        'CheckboxInput' : 'input',
+        'FileInput' : 'input',
+        'HiddenInput' : 'input',
+        'ListWidget' : 'select is-multiple',
+        'PasswordInput' : 'input',
+        'RadioInput' : 'input',
+        'Select' : 'select',
+        'SubmitInput' : 'input',
+        'TableWidget' : '',
+        'TextArea' : 'textarea',
+        'TextInput' : 'input',
+        'Option' : ''
+    }
+    def __init__(self, form, name, **attributes):
+        self.form = form
+        self.field_name = name
+        self.widget = str_2_tagger(str(self.field))
+        self.widget = Tagger(self.widget['name'], *self.widget['children'], **self.widget['attributes'])
+        self.widget._class += self.WIDGET_CLASSES[self.field.widget.__class__.__name__]
+        if form.requette:
+            self.widget.color = 'danger' if self.field.errors else 'success'
+        attributes['_id'] = 'control'
+        Tagger.__init__(self, 'DIV', self.widget, **attributes)
         self._class += 'control'
 
+    @property
+    def field(self):
+        return self.form.form._fields[self.field_name]
+
+class Control_string(Control):
+    def __init__(self, form, name, icon='user', **attributes):
+        self.icon = Icon(icon, _class='is-left', _id='icon_left', color='info')
+        Control.__init__(self, form, name)
+        if not form.labelized:
+            self.label = str_2_tagger(str(self.field.label))
+            self.label = Tagger(self.label['name'], *self.label['children'], **self.label['attributes'])
+            self.widget.attributes['_placeholder'] = labelize(self.label.children[0])
+        self._class += 'has-icons-left has-icons-right'
+        self.children.append(self.icon)
+        if form.requette:
+            self.children.append(Icon('check', _class='is-right', _id='icon_right', color='success'))
+            if self.field.errors:
+                color = 'danger'
+                self.icon_left.color = color
+                self.icon_right.color = color
+                self.icon_right.code = 'exclamation-triangle'
+
 class Field(Tagger):
-    def __init__(self, name, field, **attributes):
-        attributes['_id'] = f'{name}_field'
-        Tagger.__init__(self, 'DIV', Control(name, field), **attributes)
+    def __init__(self, form, name, **attributes):
+        self.form = form
+        self.field_name = name
+        children = [attributes['control'] if 'control' in attributes.keys() else Control(form, name)]
+        self.label = ''
+        if self.form.labelized:
+            self.label = str_2_tagger(str(self.field.label))
+            self.label = Tagger(self.label['name'], *self.label['children'], **self.label['attributes'])
+            self.label.children = [labelize(self.label.children[0])]
+            self.label._class += 'label'
+            children.insert(0, self.label)
+        if self.field.errors:
+            for error in self.field.errors:
+                children.append(P(labelize(error), _class='help is-danger'))
+        attributes['_id'] = name
+        Tagger.__init__(self, 'DIV', *children, **attributes)
         self._class += 'field'
 
+    @property
+    def field(self):
+        return self.form.form._fields[self.field_name]
+
+    def __get_control__(self):
+        return self.get_children_by_id('control')
+    def __set_control__(self, value):
+        if isinstance(value, Tagger):
+            for num, children in enumerate(self.children):
+                if children['_id'] == 'control':
+                    self.children[num] = value
+    control = property(__get_control__, __set_control__)
+
+class Field_string(Field):
+    def __init__(self, form, name, **attributes):
+        if not 'control' in attributes.keys(): 
+            attributes['control'] = Control_string(form, name)
+        Field.__init__(self, form, name, **attributes)
+
+class Field_name(Field_string):
+    def __init__(self, form, name, **attributes):
+        attributes['control'] = Control_string(form, name, 'user')
+        Field_string.__init__(self, form, name, **attributes)
+
+class Field_email(Field_string):
+    def __init__(self, form, name, **attributes):
+        attributes['control'] = Control_string(form, name, 'envelope')
+        Field_string.__init__(self, form, name, **attributes)
 
 class Html_form(Tagger):
-    def __init__(self, form, **attributes):
-        self.form = form
-        self._fields = []
+    FILEDS = {
+        'name' : Field_name,
+        'mail' : Field_email,
+    }
+    def __init__(self, form, request, labelized=False, **attributes):
+        if not '_method' in attributes.keys(): attributes['_method'] = 'POST'
+        self.labelized = labelized
+        self.fields = []
+        self.children = []
+        self.request = request
+        self.form = form(request.form)
+        Tagger.__init__(self, 'FORM', **attributes)
+        self._class += 'form box'
+        self.populate
+
+    @property
+    def populate(self):
+        if self.requette:
+            self.form.validate()
+        self.fields = []
         for name, field in self.form._fields.items():
-            self._fields.append(Field(name, field))
-        children = [
-            *self._fields,
+            self.fields.append(self.FILEDS[name](self, name))
+        self.children = [
+            *self.fields,
             DIV(
                 DIV(
                     Button(_id='submit_button', type='submit', color='success'),
@@ -53,161 +141,10 @@ class Html_form(Tagger):
                 _class='field is-grouped'
             )
         ]
-        attributes['_method'] = 'POST'
-        Tagger.__init__(self, 'FORM', *children, **attributes)
-        self._class += 'form box'
-
-class Form_config(Form):
-    name = StringField('name', [validators.Length(min=4, max=25)])
-
-# class Widget(Tagger):
-#     def __html__(self, field):
-#         if field.label:
-#             label = LABEL(field.name, _class='label')
-        # field = 
-#     input = INPUT(_class='input', _type='text', _placeholder='Text')
-#     control = DIV(input, _class='control')
-#     ret = DIV(label, control, _class='field')
-#     if field.errors:
-#         for error in field.errors:
-#             ret.append(P(error, _class='danger'))
-#     return ret
-
-
-# class Error(Tagger):
-#     def __init__(self, name, *children, color='danger', **attributes):
-#         Tagger.__init__(self, 'P', *children, id=name, **attributes)
-#         self._class += 'helper'
-#         self.message = self.children
-
-# class Text_lenth:
-#     def __init__(self, min=1, max=1):
-#         self.min = min
-#         self.max = max
-
-#     def validate(self, value):
-#         errors = dict()
-#         if isinstance(value, str):
-#             if len(value) < self.min:
-#                 errors['']
-#         return errors
-
-
-
-# class Widget(Tagger):
-#     def __init__(self, field, *children, **attributes):
-#         self.value = field.value
-#         children = [*children]
-#         self.type = field.widget
-#         if self.type == 'text':
-#             placeholder = field.default
-#             children.append(INPUT(_class='input', _value=self.value, _type=self.type, _placeholder=placeholder))
-#         Tagger.__init__(self, 'div', *children, _id=f'control_{field._id}', **attributes)
-#         self._class += 'control'
-
-# class Field(Tagger):
-#     def __init__(
-#         self,
-#         id=None,
-#         value=None,
-#         default='text',
-#         validators=[],
-#         widget='text',
-#         label=None,
-#         labelize=False,
-#         **attributes
-#         ):
-#         self.type = self.__class__.__name__.split('_')
-#         if len(self.type) == 2:
-#             self.type = self.type[1]
-#         else:
-#             self.type = 'text'
-#         self._id = id if id else self.type.lower()
-#         children = []
-#         if label: labelize = True
-#         self.label = ''
-#         if labelize:
-#             children.append(LABEL(label if label else labelize(self.id), _class='label'))
-#         self.value = value
-#         self.default = default
-#         self.widget = widget
-#         self.validators = validators
-#         children.append(Widget(self))
-#         Tagger.__init__(self, 'div', *children, **attributes)
-#         self._class += 'field'
     
-#     def validate(self, value):
-#         validation = True
-#         if self.validators:
-#             for validator in self.validators:
-#                 if not validator.validate(value):
-#                     self.children.append(validator.error)
-#                     validation = False
-#         return validation
+    @property
+    def requette(self):
+        if self.request.method == self.attributes['_method']:
+            return True
+        return False
 
-# class Field_text(Field):
-#     def __init__(self):
-#         Field.__init__(self)
-
-# class Form(Tagger):
-#     AUTORIZED_METHODS=['GET', 'POST', 'PUT']
-#     def __init__(self, id=None, datas=dict(), fields=[], **attributes):
-#         children = [
-#             *fields,
-#             DIV(
-#                 DIV(
-#                     Button(_id='submit_button', type='submit'),
-#                     Button(_id='cancel_button', type='submit'),
-#                     _id='buttons_control',
-#                     _class='control'
-#                 ),
-#                 _id='buttons_field',
-#                 _class='field is-grouped'
-#             )
-#         ]
-
-#         Tagger.__init__(self, 'form', *children, **attributes)
-#         self._id = id if id else self.__class__.__name__.split('_')[1] if '_' in self.__class__.__name__ else self.__class__.__name__
-#         self._class += 'form'
-#         if not '_method' in self.attributes.keys(): self.method = 'POST'
-#         # self._db = db
-#         # self._function = function(datas) if function else self.children
-#         # if isinstance(datas, dict):
-#         #     self.validate(datas)
-        
-#     # def __get__fileds__(self):
-#     #     return self.children
-#     # def __set_fields__(self, **values):
-#     #     for field in self.__get__fileds__():
-#     #         if field.name in values.keys():
-#     #             field.value = values[field.name]
-#     # def __del__fields__(self):
-#     #     self.children = []
-#     # fileds = property(__get__fileds__, __set_fields__, __del__fields__)
-
-#     def __get__method__(self):
-#         if '_method' in self.attributes.keys():
-#             return self.attributes['_method']
-#         return None
-#     def __set_method__(self, name):
-#         if name in self.AUTORIZED_METHODS:
-#             self.attributes['_method'] = name
-#     method = property(__get__method__, __set_method__)
-
-#     def validate(self, **datas):
-#         validation = True
-#         for field in self.fileds:
-#             if field.name in datas.keys():
-#                 if not field.validate(datas[field.name]):
-#                     validation = False
-#                     for error in field.errors:
-#                         filed.helper.append(error)
-#         return validation
-
-# class Form_config(Form):
-#     fields=[
-#         Field_text()
-#     ]
-#     def __init__(self, id=None, datas=dict(), **attributes):
-#         Form.__init__(self, id=None, datas=dict(), fields=self.fields, **attributes)
-#         print(self)
