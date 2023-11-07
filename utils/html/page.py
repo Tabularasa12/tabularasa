@@ -46,10 +46,10 @@ class Page(Tagger):
                 _id = 'header'
             ),
             DIV(
-                DIV(_id='head'),
-                Section(_id='body'),
-                DIV(_id='foot'),
-                _class = 'hero',
+                DIV(_id='head', _class='hero-head'),
+                Level(_id='body', _class='hero-body'),
+                DIV(_id='foot', _class='hero-foot'),
+                _class = 'hero is-fullheight',
                 _id='content'
             )
         ]
@@ -97,23 +97,31 @@ class Apppage(Page):
         Page.__init__(self, app)
         self._class += 'has-navbar-fixed-top'
         self.body._class += 'is-justify-content-center'
-        
-        self.navbar = Navbar(_id='navbar', _class='is-fixed-top', color=self.color)
+        self.navbar = Navbar(_id='navbar', _class='is-fixed-top has-shadow', color=self.color)
         @app.before_request
         def navbar_init():
             if self.config['navbar']:
-                self.navbar_position = self.config['navbar']
-            self.navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text="Retour à la page d'accueil"), url=url_for('index'))
-            start = []
-            for c in app.controllers:
-                c_name = c.rsplit('.', 1)[1]
-                if c_name != 'index':
-                    start.append(Navitem(labelize(c_name), url=url_for(f'{app.name}.{c_name}')))
-                else:
-                    start.append(Navitem(Icon('home'), url=url_for(f'{app.name}.index')))
-            self.navbar.start.update(*start)
-            end = Navitem(Icon('cog'), url=url_for(f'{app.name}.config'))
-            self.navbar.end.update(end)
+                self.navbar_position = self.config['navbar']['position']
+            self.navbar.link.update(Image(url=url_for('static', filename=DEFAULT_LOGO_FILE_NAME), text=f"Retour à la liste des applications"), url=url_for('index'))
+            def items(side):
+                items = []
+                for item in self.config['navbar'][side]:
+                    name = item['name']
+                    help = item['help']
+                    icon = item['icon']
+                    text = item['text']
+                    view = item['view']
+                    children = []
+                    for v in view:
+                        if v == 'icon':
+                            children.append(Icon(icon))
+                        elif v == 'text':
+                            children.append(Text(text, case="capitalized"))
+                    items.append(Navitem(*children, url=url_for(f"{app.name}.{name}"), _title=help))
+                return items
+            
+            self.navbar.start.update(*items("left"))
+            self.navbar.end.update(*items("right"))
             self.navbar.activate
             self.head.update(self.navbar)
 

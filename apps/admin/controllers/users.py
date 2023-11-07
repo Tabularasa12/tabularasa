@@ -4,7 +4,7 @@ from utils.html import *
 from utils.functions import labelize
 from models import Db_users
 
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users')
 @app.to_page()
 def users():
     body = Db_users.query.all()

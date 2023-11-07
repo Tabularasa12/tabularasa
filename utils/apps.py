@@ -113,7 +113,7 @@ class Master(Flask):
             else:
                 raise ValueError("Wrong event type")
 
-    def to_page(self, template=DEFAUT_TEMPLATE):
+    def to_page(self, template=DEFAUT_TEMPLATE, **kwargs):
         def decorator(f):
             @wraps(f)
             def decorated_function(*args, **kwargs):
@@ -145,6 +145,7 @@ class Master(Flask):
             self.register_blueprint(app, url_prefix=f'/{a}')
             with self.app_context():
                 for app in self.blueprints.values():
+                    # print(app)
                     app.page.favicon['_href'] = url_for(f'{app.name}.static', filename=DEFAULT_FAVICON_FILE_NAME)
                     app.page.logo['_href'] = url_for(f'{app.name}.static', filename=DEFAULT_LOGO_FILE_NAME)
 
@@ -166,32 +167,9 @@ class App(Blueprint):
         with self.master.app_context():
             self.page = Apppage(self)
 
-        @self.route('/config', methods=['GET', 'POST'])
-        @self.to_page()
-        def config():
-            print(request.form)
-            body = Html_form(Form_config, request)
-
-            # body = Form_config(request)
-            # body = FORM(
-            #     DIV(
-            #         LABEL('Email', _class='label'),
-            #         DIV(
-            #             INPUT(_class='input is-danger', _type='email', _placeholder="Email input", _value="hello@"),
-            #             SPAN(I(_class="fas fa-envelope"), _class='icon is-small is-left'),
-            #             SPAN(I(_class="fas fa-exclamation-triangle"), _class='icon is-small is-right'),
-            #             P('This email is invalid', _class='help is-danger'),
-            #             _class='control has-icons-left has-icons-right'
-            #         ),
-            #         _class='field'
-            #     ),
-            #     _class='form box'
-            # )
-            
-            return locals()
-
-
     controllers = Master.controllers
     to_page = Master.to_page
+
+
 
 

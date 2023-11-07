@@ -1,6 +1,7 @@
 from flask import redirect, request
 
 from utils.url import URL
+from utils.files import join
 
 from .elements import Button
 from .taggers import DIV, SPAN, Tagger
@@ -20,12 +21,14 @@ class Burger(Button):
 
 class Navitem(Button):
     def __init__(self, *children, **attributes):
-        Button.__init__(self, *children, **attributes)
-        self._class.replace('button', 'navbar-item icon-text')
+        Button.__init__(self, *children, type='link', **attributes)
+        self._class.replace('button', 'navbar-item icon-text is-tab')
 
+    @property
     def activate(self):
         self._class += 'is-active'
 
+    @property
     def desactivate(self):
         self._class -= 'is-active'
 
@@ -73,17 +76,13 @@ class Navbar(Tagger):
         self._class += self.__class__.__name__.lower()
         self._class += "is-fullhd"
 
-    # def __get_color__(self):
-    #     return self.menu.color
-    # def __set_color__(self, name):
-    #     self._class += f'is-{name}'
-    #     self.menu.color = name
-    #     self.start.color = name
-    #     self.end.color = name
-    #     self.brand.color = name
-    # def __del_color__(self):
-    #     del self.menu.color
-    # color = property(__get_color__, __set_color__, __del_color__)
+    def __get_color__(self):
+        return self.back_color
+    def __set_color__(self, name):
+        self.back_color = name
+    def __del_color__(self):
+        del self.back_color
+    color = property(__get_color__, __set_color__, __del_color__)
 
     def __get_position__(self):
         for position in self.AUTORIZED_POSITIONS:
@@ -131,3 +130,9 @@ class Navbar(Tagger):
             self.open
         else:
             self.close
+        for navitem in self.start.children+self.end.children:
+            url = URL(request.full_path)
+            if len(url.args) >= 2:
+                app_url = join(url.args[0], url.args[1])
+                if app_url == navitem.url:
+                    navitem.activate

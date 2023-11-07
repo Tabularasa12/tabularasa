@@ -5,6 +5,20 @@
     "description": "Regarder le passé pour construire l'avenir",
     "height": "fullheight",
     "lang": "fr",
-    "navbar": "bottom",
+    "navbar": {
+        "left": [
+            {
+                "help": null,
+                "icon": "home",
+                "name": "index",
+                "text": "accueil",
+                "view": [
+                    "icon"
+                ]
+            }
+        ],
+        "position": "bottom",
+        "right": []
+    },
     "viewport": "width=device-width, initial-scale=1"
 }

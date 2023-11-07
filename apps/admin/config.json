@@ -5,6 +5,49 @@
     "description": "Regarder le passé pour construire l'avenir",
     "height": "fullheight",
     "lang": "fr",
-    "navbar": "top",
+    "navbar": {
+        "left": [
+            {
+                "help": "Retour à la page d'accueil",
+                "icon": "home",
+                "name": "index",
+                "text": "accueil",
+                "view": [
+                    "icon"
+                ]
+            },
+            {
+                "help": "gestion des utilisateurs",
+                "icon": "user",
+                "name": "users",
+                "text": "utilisateurs",
+                "view": [
+                    "icon",
+                    "text"
+                ]
+            }
+        ],
+        "position": "top",
+        "right": [
+            {
+                "help": "configuration de l'application",
+                "icon": "cog",
+                "name": "config",
+                "text": "configuration",
+                "view": [
+                    "icon"
+                ]
+            },
+            {
+                "help": "visualisation des icones disponibles",
+                "icon": "icons",
+                "name": "icon",
+                "text": "icons",
+                "view": [
+                    "icon"
+                ]
+            }
+        ]
+    },
     "viewport": "width=device-width, initial-scale=1"
 }

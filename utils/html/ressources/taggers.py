@@ -60,7 +60,7 @@ def str_2_tagger(tagger):
         value = attribute_split[1].strip('"').strip("'")
         attrs[key] = value
 
-    return dict(name=name, children=childs, attributes=attrs)
+    return Tagger(name, *childs, **attrs)
 
 class Text_attr:
     types_sep = dict(

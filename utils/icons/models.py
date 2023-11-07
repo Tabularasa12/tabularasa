@@ -2,7 +2,7 @@ from ..files import *
 
 class Icons:
     prefix='fa-'
-    first_line = 496
+    first_line = 693
     end_line = 6350
     icons_dir = 'icons'
 

@@ -52,8 +52,8 @@ def index():
         _href=url_for('index'),
     )
 
-    apps = [Button(labelize(app.name), url=url_for(f'{app.name}.index'), color=app.page.color) for app in default.blueprints.values() if app.name != 'admin']
-    body = [Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered')]
+    apps = [Button(labelize(app.name), url=url_for(f'{app.name}.index'), color=app.page.color, ) for app in default.blueprints.values() if app.name != 'admin']
+    body = Container(Buttons(logo, _class='is-centered'), Buttons(*apps, _class='is-centered'))
 
     return locals()
 

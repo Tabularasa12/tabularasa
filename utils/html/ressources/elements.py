@@ -23,6 +23,7 @@ class Buttons(Tagger):
     def __init__(self, *children, **attributes):
         Tagger.__init__(self, 'DIV', *children, **attributes)
         self._class += self.__class__.__name__.lower()
+        self._class += 'has-addons control'
 
 class Button(Tagger):
     def __init__(self, *children, type='link', **attributes):
@@ -39,7 +40,7 @@ class Button(Tagger):
                     attributes['_value'] = children[0]
                     children = []
         Tagger.__init__(self, name, *children, **attributes)
-        self._class += self.__class__.__name__.lower()
+        self._class += 'button'
         if self._name == 'A':
             if 'url' in attributes.keys():
                 self.url = attributes['url']

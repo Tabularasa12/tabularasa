@@ -15,7 +15,7 @@ for c in app.controllers:
 
 # @app.before_request
 # def init():
-    
+#     app.page.navbar.end.append(Navitem(Icon('object-group'), url=url_for(f'{app.name}.icon')))
 #     app.page._class += 'has-navbar-fixed-top'
 #     app.page.body._class += 'is-justify-content-center'
     
