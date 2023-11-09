@@ -59,3 +59,9 @@ def add_syspath(path):
 
 def now():
     return datetime.now().strftime(DEFAULT_LOG_TIME_FORMAT)
+
+def strip_list(list):
+    ret = []
+    for el in list:
+        if el: ret.append(el)
+    return ret

@@ -1,6 +1,7 @@
 from .helpers import TAGGER
 from copy import copy
 from settings import DEFAULT_SIZE
+from utils.functions import strip_list
 
 TAGS = [
     "A",
@@ -9,6 +10,7 @@ TAGS = [
     "FORM",
     "HEAD",
     "HTML",
+    "HR",
     "IMG",
     "INPUT",
     "BUTTON",
@@ -37,30 +39,80 @@ TAGS = [
 
 __all__ = TAGS +['Tagger', 'AUTORIZED_COLORS', 'str_2_tagger']
 
-
 def str_2_tagger(tagger):
-    tagger_split = tagger.lstrip('<').rstrip('>').split(' ', 1)
-    
-    name = tagger_split[0]
-    
-    tagger = tagger_split[1].rsplit(f'</{name}', 1)[0]
-    childs = []
-    if '<' in tagger and '>' in tagger:
-        childrens = tagger.split('>', 1)[1].split('><')
-        for children in childrens:
-            childs.append(str_2_tagger(children))
-    elif '>' in tagger:
-        childs.append(tagger.split('>', 1)[1])
+    def is_tagger_str(tagger):
+        if isinstance(tagger, str):
+            tagger = tagger.strip()
+            if tagger.startswith('<') and tagger.endswith('>'): return tagger
+            else: return False
+        else: raise TypeError(f'{tagger} is not a string')
 
-    attrs = dict()
-    attributes = tagger.split('>', 1)[0].split(' ')
-    for attribute in attributes:
-        attribute_split = attribute.split('=')
-        key = f'_{attribute_split[0]}'
-        value = attribute_split[1].strip('"').strip("'")
-        attrs[key] = value
+    def get_name(tagger):
+        tagger = is_tagger_str(tagger)
+        if tagger:
+            tagger_split = strip_list(tagger.split('>', 1))
+            start = tagger_split[0].lstrip('<')
+            elements = strip_list(start.split(' '))
+            return elements[0]
+        return None
 
-    return Tagger(name, *childs, **attrs)
+    def get_attributes(tagger):
+        tagger = is_tagger_str(tagger)
+        if tagger:
+            attributes = dict()
+            elements = tagger.strip(f'<{get_name(tagger)}').split('>', 1)[0].strip().split(' ')
+            for element in elements:
+                element = element.split('=')
+                if len(element) == 2:
+                    attributes[f'_{element[0]}'] = element[1].strip("\'").strip('\"')
+                elif element[0]:
+                    attributes[f'_{element[0]}'] = element[0]
+            return attributes
+        return None
+
+    def get_children(tagger):
+        tagger_str = is_tagger_str(tagger)
+        if tagger_str:
+            tagger = tagger_str
+            children = []
+            elements = strip_list(tagger.split('>', 1))
+            if len(elements) == 2:
+                elements = elements[1].split(f'</{get_name(tagger)}>', 1)
+                if elements[0]:
+                    childs = elements[0].strip()
+                    child = first_child(childs)
+                    while child:
+                        children.append(child)
+                        childs = childs.split(child, 1)[1]
+                        child = first_child(childs)
+            return children
+        return [tagger]
+
+    def first_child(string):
+        string = string.strip()
+        if '<' in string and '>' in string:
+            elements = string.split('<', 1)
+            if elements[0]:
+                return elements[0]
+            else:
+                name = get_name(f'<{elements[1]}')
+                tagger = string.split(f'</{name}>', 1)
+                if len(tagger) == 2:
+                    return f'{tagger[0]}</{name}>'
+                else:
+                    tagger = tagger[0].split('>', 1)[0]
+                    return f'{tagger}>'
+        else:
+            return string
+
+    tagger_str = is_tagger_str(tagger)
+    if tagger_str:
+        children = get_children(tagger_str)
+        for num, child in enumerate(children):
+            children[num] = str_2_tagger(child)
+        return Tagger(get_name(tagger_str), *children, **get_attributes(tagger_str))
+    else:
+        return tagger
 
 class Text_attr:
     types_sep = dict(
@@ -316,6 +368,7 @@ CODE = TAG.code
 FORM = TAG.form
 HEAD = TAG.head
 HTML = TAG.html
+HR = TAG.hr
 BODY = TAG.body
 TABLE = TAG.table
 THEAD = TAG.thead

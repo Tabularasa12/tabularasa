@@ -170,7 +170,7 @@ class Icon(Tagger):
         self._class += self.__class__.__name__.lower()
         self.prefix = prefix
         self.code = code
-        self.size = self.attributes['size'] if 'size' in self.attributes.keys() else DEFAULT_SIZE
+        # self.size = self.attributes['size'] if 'size' in self.attributes.keys() else DEFAULT_SIZE
 
     color = Tagger.text_color
 

@@ -9,7 +9,7 @@ from .taggers import *
 from .validators import *
 
 
-class Control(Tagger, type):
+class Control(Tagger):
     WIDGET_CLASSES = {
         'CheckboxInput' : 'input',
         'FileInput' : 'input',
@@ -24,49 +24,38 @@ class Control(Tagger, type):
         'TextInput' : 'input',
         'Option' : ''
     }
-    def __init__(self, nom, bases, dict):
-        Tagger.__init__(self, 'DIV', **self.attributes)
-        self._class += 'control'
-        self.field = None
-        self.label = None
-
-    def __call__(self, form, name, **attributes):
-        attributes['_id'] = f'control_{name}'
+    def __init__(self, form, name, **attributes):
         self.field = form.form._fields[name]
         self.label = str_2_tagger(str(self.field.label))
         self.widget = str_2_tagger(str(self.field))
         self.widget._class += self.WIDGET_CLASSES[self.field.widget.__class__.__name__]
         if form.requette:
             self.widget.color = 'danger' if self.field.errors else 'success'
+        attributes['_id'] = f'control_{name}'
+        Tagger.__init__(self, 'DIV', self.widget, **attributes)
+        self._class += 'control'
 
-class Control_string(metaclass=Control):
-    self.icon = 'cog'
-    self.attributes['_class'] = 'has-icons-left has-icons-right'
-    # def __init__(self, form, name, icon='user', **attributes):
-    #     Control.__init__(self, form, name)
-    #     if not form.labelized:
-    #         self.widget.attributes['_placeholder'] = labelize(self.label.children[0])
-    #     self.children.append(self.icon)
-    #     if form.requette:
-    #         self.children.append(Icon('check', _class='is-right', _id='icon_right', color='success'))
-    #         if self.field.errors:
-    #             color = 'danger'
-    #             self.icon_left.color = color
-    #             self.icon_right.color = color
-    #             self.icon_right.code = 'exclamation-triangle'
+class Control_string(Control):
+    def __init__(self, form, name, icon='user', **attributes):
+        self.icon = Icon(icon, _class='is-left', _id='icon_left')
+        Control.__init__(self, form, name)
+        if not form.labelized:
+            self.widget.attributes['_placeholder'] = labelize(self.label.children[0])
+        self._class += 'has-icons-left has-icons-right'
+        self.children.append(self.icon)
+        if form.requette:
+            self.children.append(Icon('check', _class='is-right', _id='icon_right', color='success'))
+            if self.field.errors:
+                color = 'danger'
+                self.icon_left.color = color
+                self.icon_right.color = color
+                self.icon_right.code = 'exclamation-triangle'
 
-class Field(Tagger, type):
-    def __init__(self, nom, bases, dict):
-        Tagger.__init__(self, 'DIV')
-        self._class += 'field'
-        self.field = None
-        self.label = None
-
-    def __call__(self, form, name, **attributes):
-        attributes['_id'] = f'field_{name}'
-        self.control = self.control(form, name, **attributes)
+class Field(Tagger):
+    def __init__(self, form, name, **attributes):
         self.field = form.form._fields[name]
-        self.children = [self.control]
+        children = [attributes['control'] if 'control' in attributes.keys() else Control(form, name)]
+        self.label = ''
         if form.labelized:
             self.label = str_2_tagger(str(self.field.label))
             self.label.children = [labelize(self.label.children[0])]
@@ -74,31 +63,27 @@ class Field(Tagger, type):
             children.insert(0, self.label)
         if self.field.errors:
             children.append(P(labelize(self.field.errors[0]), _class='help is-danger'))
-        return self
+        attributes['_id'] = f'field_{name}'
+        Tagger.__init__(self, 'DIV', *children, **attributes)
+        self._class += 'field'
 
 class Field_string(Field):
-    control = Control_string
-    def __call__(self, form, name, **attributes):
-    #     if not 'control' in attributes.keys(): 
-    #         attributes['control'] = Control_string(form, name)
-        Field.__call__(self, form, name, 'cog', **attributes)
+    def __init__(self, form, name, **attributes):
+        if not 'control' in attributes.keys(): 
+            attributes['control'] = Control_string(form, name)
+        Field.__init__(self, form, name, **attributes)
 
 class Field_name(Field_string):
-    icon = 'user'
-    # def __init__(self, form, name, **attributes):
-    #     attributes['control'] = Control_string(form, name, 'user')
-    #     Field_string.__init__(self, form, name, **attributes)
+    def __init__(self, form, name, **attributes):
+        attributes['control'] = Control_string(form, name, 'user')
+        Field_string.__init__(self, form, name, **attributes)
 
 class Field_email(Field_string):
-    icon = 'at'
-    # def __init__(self, form, name, **attributes):
-    #     attributes['control'] = Control_string(form, name, 'at')
-    #     Field_string.__init__(self, form, name, **attributes)
+    def __init__(self, form, name, **attributes):
+        attributes['control'] = Control_string(form, name, 'at')
+        Field_string.__init__(self, form, name, **attributes)
 
 class Html_form(Tagger, type):
-    def __new__(cls, nom, bases, dict):
-        return type.__new__(cls, nom, bases, dict)
-
     def __init__(self, nom, bases, dict):
         self.html_fields = []
         self.flask_fields = {}

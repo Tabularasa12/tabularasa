@@ -64,12 +64,10 @@ class Page(Tagger):
         self.content.color = name
         if self.get_children_by_id('navbar'):
             self.navbar.color = name
-        # self.config['color'] = name
     def __del_color__(self):
         del self.content.color
         if self.get_children_by_id('navbar'):
             self.navbar.color = None
-        # self.config['color'] = None
     color = property(__get_color__, __set_color__, __del_color__)
 
     def __get_height__(self):
